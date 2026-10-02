@@ -42,10 +42,10 @@ export interface Founder {
   isPlaceholder?: boolean
 }
 
-export const FOUNDERS: { dario: Founder; cto: Founder } = {
+export const FOUNDERS: { dario: Founder; marko: Founder; cto: Founder } = {
   dario: {
     name: 'Dario Saisan',
-    role: { en: 'Cofounder', de: 'Mitgründer' },
+    role: { en: 'Founder', de: 'Gründer' },
     bio: {
       en: "Performance coach, sport scientist, and founder of Saisan Training (since 2019). Dario has spent years building performance systems for elite athletes in Bundesliga football and top European basketball leagues. He also completed a Strength & Conditioning internship with USC Division 1 Men's Basketball in Los Angeles. He brings sport science methodology, performance testing expertise, and a proven athlete clientele to VANE.",
       de: 'Performance Coach, Sportwissenschaftler und Gründer von Saisan Training (seit 2019). Dario baut seit Jahren Performancesysteme für Spitzensportler im Fußball der Deutschen Bundesliga und in europäischen Spitzenligen im Basketball. Zudem absolvierte er ein Praktikum in Strength and Conditioning beim Basketballteam der Division 1 der USC in Los Angeles. Er bringt sportwissenschaftliche Methodik, Erfahrung in Leistungstests und einen gewachsenen Athletenstamm in VANE ein.',
@@ -56,10 +56,28 @@ export const FOUNDERS: { dario: Founder; cto: Founder } = {
       { en: "S&C Internship, USC Division 1 Men's Basketball (Los Angeles)", de: "Praktikum in Strength and Conditioning, USC Division 1 Men's Basketball (Los Angeles)" },
     ],
     contribution: {
-      en: 'Product vision, sport science methodology, performance testing, athlete network',
-      de: 'Produktvision, sportwissenschaftliche Methodik, Leistungstests, Athletennetzwerk',
+      en: 'Sport science methodology, performance testing, athlete network, and clear product communication',
+      de: 'Sportwissenschaftliche Methodik, Leistungstests, Athletennetzwerk und verständliche Produktkommunikation',
     },
     linkedinUrl: 'https://www.linkedin.com/in/dario-saisan-8a4504200',
+    isPlaceholder: false,
+  },
+  marko: {
+    name: 'Marko Rados',
+    role: { en: 'CEO', de: 'CEO' },
+    bio: {
+      en: "Marko combines more than 15 years in performance sport and direct athlete work with experience building a company. In late 2014, he helped establish a business applying machine learning, force plates, and motion capture in professional sport and rehabilitation. As VANE's CEO, he leads product vision, strategy, business development, partnerships, and operations.",
+      de: 'Marko verbindet über 15 Jahre Leistungssport und direkte Athletenarbeit mit Erfahrung im Unternehmensaufbau. Ende 2014 baute er ein Unternehmen mit auf, das Machine Learning, Kraftmessplatten und Motion Capture im Profisport und in der Rehabilitation einsetzte. Als CEO von VANE verantwortet er Produktvision, Strategie, Geschäftsentwicklung, Partnerschaften und den operativen Aufbau.',
+    },
+    credentials: [
+      { en: '15+ years in performance sport', de: '15+ Jahre im Leistungssport' },
+      { en: '850+ athletes supported', de: '850+ Athleten begleitet' },
+      { en: 'Professional and youth sport', de: 'Profi- und Nachwuchssport' },
+    ],
+    contribution: {
+      en: 'Product vision, strategy, business development, partnerships, and operations',
+      de: 'Produktvision, Strategie, Geschäftsentwicklung, Partnerschaften und operativer Aufbau',
+    },
     isPlaceholder: false,
   },
   cto: {

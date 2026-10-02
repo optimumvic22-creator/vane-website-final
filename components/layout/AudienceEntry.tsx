@@ -8,7 +8,6 @@ import { useLocale } from "@/lib/locale";
 import { trackEvent } from "@/lib/analytics";
 import { useMediaPlayback } from "@/lib/use-media-playback";
 import { useMotionPaused } from "@/lib/motion-preference";
-import { MotionToggle } from "@/components/ui/motion-toggle";
 
 const ENTRY_BAND_HEIGHT =
   "calc(max(var(--entry-intro-min), clamp(220px, 27svh, 260px), clamp(220px, calc(656px - 100vw), 300px)) + env(safe-area-inset-top))";
@@ -1527,23 +1526,11 @@ export function AudienceEntry() {
   const coachVideoRef = useRef<HTMLVideoElement>(null);
   const partnerVideoRef = useRef<HTMLVideoElement>(null);
   const activatedVideosRef = useRef(new Set<AudienceSlug>());
-  const videoLoadTimerRef = useRef<number | null>(null);
-  const [loadedAudiences, setLoadedAudiences] = useState<
-    ReadonlySet<AudienceSlug>
-  >(() => new Set());
   const [activeAudience, setActiveAudience] = useState<
     (typeof roles)[number]["slug"] | null
   >(null);
   const isGerman = locale === "de";
   const activeRole = roles.find((role) => role.slug === activeAudience);
-
-  useEffect(() => {
-    if (!activeAudience || !mediaAllowed || loadedAudiences.has(activeAudience) || failedAudiences.has(activeAudience)) return;
-    const timer = window.setTimeout(() => {
-      setLoadedAudiences((current) => new Set(current).add(activeAudience));
-    }, 120);
-    return () => window.clearTimeout(timer);
-  }, [activeAudience, mediaAllowed, loadedAudiences, failedAudiences]);
 
   useEffect(() => {
     const elements = [athleteVideoRef.current, coachVideoRef.current, partnerVideoRef.current];
@@ -1580,7 +1567,7 @@ export function AudienceEntry() {
         return;
       }
 
-      if (!loadedAudiences.has(audience) || !mediaAllowed || failedAudiences.has(audience)) {
+      if (!mediaAllowed || failedAudiences.has(audience)) {
         element.preload = "none";
         element.pause();
         if (!mediaAllowed && element.currentSrc) {
@@ -1591,7 +1578,7 @@ export function AudienceEntry() {
         return;
       }
 
-      if (activeAudience === audience && !reduceMotion) {
+      if (!reduceMotion) {
         const prepareTimeline = () => {
           if (activatedVideosRef.current.has(audience)) return;
 
@@ -1635,33 +1622,10 @@ export function AudienceEntry() {
 
       element.pause();
       element.preload = "none";
-
-      const showRestFrame = () => {
-        try {
-          element.currentTime = restTime;
-        } catch {
-          // The media metadata may not be ready yet.
-        }
-      };
-
-      if (element.readyState >= 1 && activatedVideosRef.current.has(audience)) {
-        const resetTimer = window.setTimeout(showRestFrame, 300);
-        cleanups.push(() => window.clearTimeout(resetTimer));
-        return;
-      }
     });
 
     return () => cleanups.forEach((cleanup) => cleanup());
-  }, [activeAudience, loadedAudiences, reduceMotion, mediaAllowed, failedAudiences]);
-
-  useEffect(
-    () => () => {
-      if (videoLoadTimerRef.current !== null) {
-        window.clearTimeout(videoLoadTimerRef.current);
-      }
-    },
-    [],
-  );
+  }, [reduceMotion, mediaAllowed, failedAudiences]);
 
   const selectLanguage = (language: "en" | "de") => {
     setLocale(language);
@@ -1677,44 +1641,11 @@ export function AudienceEntry() {
     });
   };
 
-  const loadAudienceVideo = (audience: AudienceSlug) => {
-    setLoadedAudiences((current) => {
-      if (current.has(audience)) return current;
-
-      const next = new Set(current);
-      next.add(audience);
-      return next;
-    });
-  };
-
-  const activateAudience = (
-    audience: AudienceSlug,
-    loadDelay = 120,
-  ) => {
+  const activateAudience = (audience: AudienceSlug) => {
     setActiveAudience(audience);
-    if (reduceMotion || !mediaAllowed || failedAudiences.has(audience)) return;
-
-    if (videoLoadTimerRef.current !== null) {
-      window.clearTimeout(videoLoadTimerRef.current);
-    }
-
-    if (loadDelay === 0) {
-      loadAudienceVideo(audience);
-      return;
-    }
-
-    videoLoadTimerRef.current = window.setTimeout(() => {
-      loadAudienceVideo(audience);
-      videoLoadTimerRef.current = null;
-    }, loadDelay);
   };
 
   const deactivateAudience = (audience: AudienceSlug) => {
-    if (videoLoadTimerRef.current !== null) {
-      window.clearTimeout(videoLoadTimerRef.current);
-      videoLoadTimerRef.current = null;
-    }
-
     setActiveAudience((current) =>
       current === audience ? null : current,
     );
@@ -1745,7 +1676,6 @@ export function AudienceEntry() {
             />
           </Link>
           <div className="flex items-center gap-1 md:gap-2">
-          <MotionToggle />
           <div
             className="flex shrink-0 items-center rounded-full border border-white/8 bg-black/25 p-1 backdrop-blur-md max-[359px]:p-0"
             role="group"
@@ -1843,7 +1773,7 @@ export function AudienceEntry() {
                 onClick={() => selectAudience(role.slug)}
                 onMouseEnter={() => activateAudience(role.slug)}
                 onMouseLeave={() => deactivateAudience(role.slug)}
-                onFocus={() => activateAudience(role.slug, 0)}
+                onFocus={() => activateAudience(role.slug)}
                 onBlur={() => deactivateAudience(role.slug)}
                 className="group absolute inset-0 z-10 overflow-hidden focus-visible:z-20 focus-visible:outline-none"
                 style={{ clipPath: role.clipPath }}
@@ -1867,7 +1797,7 @@ export function AudienceEntry() {
                             : partnerVideoRef
                       }
                       src={
-                        loadedAudiences.has(role.slug) && mediaAllowed && !failedAudiences.has(role.slug)
+                        mediaAllowed && !failedAudiences.has(role.slug)
                           ? role.video
                           : undefined
                       }

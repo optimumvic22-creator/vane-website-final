@@ -9,10 +9,20 @@ function assertBilingual(text: { en: string; de: string } | undefined) {
 }
 
 describe('FOUNDERS', () => {
-  it('exposes Dario as the announced co-founder with the canonical name', () => {
+  it('exposes Dario as the founder with the canonical name', () => {
     expect(FOUNDERS.dario.name).toBe('Dario Saisan')
+    expect(FOUNDERS.dario.role.en).toBe('Founder')
+    expect(FOUNDERS.dario.role.de).toBe('Gründer')
     expect(FOUNDERS.dario.isPlaceholder).toBe(false)
     expect(FOUNDERS.dario.linkedinUrl).toMatch(/^https:\/\/www\.linkedin\.com\//)
+  })
+
+  it('exposes Marko as CEO with a bilingual profile', () => {
+    expect(FOUNDERS.marko.name).toBe('Marko Rados')
+    expect(FOUNDERS.marko.role.en).toBe('CEO')
+    expect(FOUNDERS.marko.role.de).toBe('CEO')
+    expect(FOUNDERS.marko.isPlaceholder).toBe(false)
+    assertBilingual(FOUNDERS.marko.bio)
   })
 
   it('keeps the CTO as an unannounced placeholder', () => {

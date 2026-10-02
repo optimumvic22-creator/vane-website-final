@@ -12,7 +12,6 @@ import { useLocale } from '@/lib/locale'
 import { trackEvent } from '@/lib/analytics'
 import { isAudienceSlug, type AudienceSlug } from '@/lib/audience-content'
 import { LanguageToggle } from './LanguageToggle'
-import { MotionToggle } from '@/components/ui/motion-toggle'
 
 type NavLink = {
   href: string
@@ -193,7 +192,6 @@ export function SiteHeader() {
             </Link>
           ))}
           <LanguageToggle />
-          <MotionToggle />
           <Link
             href={ctaHref}
             onClick={() => trackEvent('cta_click', { location: 'header', audience: activeAudience ?? 'general' })}
@@ -204,7 +202,6 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-1 lg:hidden">
-          <MotionToggle />
           <button
             ref={menuButtonRef}
             type="button"

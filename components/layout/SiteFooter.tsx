@@ -36,14 +36,14 @@ export function SiteFooter() {
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               {locale === 'de' ? 'Wir haben menschlicher Bewegung eine Sprache gegeben. Bewegungsanalyse aus Wien.' : 'We gave human movement a language. Movement quality assessment from Vienna.'}
             </p>
-            <a href="mailto:hello@vanescience.com" className={`mt-3 ${footerLinkClass}`}>
-              hello@vanescience.com
+            <a href="mailto:office@vanescience.com" className={`mt-3 ${footerLinkClass}`}>
+              office@vanescience.com
             </a>
             <div className="mt-4 -ml-3 flex gap-1">
               <a href="https://linkedin.com/company/vanescience" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className={socialLinkClass}>
                 <Linkedin className="h-5 w-5" />
               </a>
-              <a href="https://instagram.com/vanescience" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className={socialLinkClass}>
+              <a href="https://www.instagram.com/vane.sciences/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className={socialLinkClass}>
                 <Instagram className="h-5 w-5" />
               </a>
             </div>

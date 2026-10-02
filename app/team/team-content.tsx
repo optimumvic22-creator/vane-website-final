@@ -18,7 +18,6 @@ interface Founder {
   contribution: string
   linkedin?: string
   imageUrl?: string
-  imagePosition?: string
 }
 
 /**
@@ -41,13 +40,11 @@ export interface SanityTeamMember {
 }
 
 /**
- * Fallback founder copy, derived from the shared identity source
- * (`lib/founders.ts`) so names, credentials and the CTO placeholder can never
- * drift from the homepage and investors page. Used only when Sanity has no
- * team members; otherwise the CMS is the source of truth.
+ * Public leadership profiles derived from the shared identity source.
+ * CMS content may enrich Dario's profile, but cannot hide either leader.
  */
 function fromFounders(locale: 'en' | 'de'): Founder[] {
-  return [FOUNDERS.dario, FOUNDERS.cto]
+  return [FOUNDERS.dario, FOUNDERS.marko]
     .filter((founder) => !founder.isPlaceholder)
     .map((founder) => ({
       name: founder.name,
@@ -59,9 +56,8 @@ function fromFounders(locale: 'en' | 'de'): Founder[] {
       contribution: founder.contribution?.[locale] ?? '',
       linkedin: founder.linkedinUrl,
       imageUrl: founder.name === FOUNDERS.dario.name
-        ? '/audiences/coach-training-decisions.jpg'
-        : undefined,
-      imagePosition: founder.name === FOUNDERS.dario.name ? 'center 38%' : undefined,
+        ? '/audiences/coach-saisan-presentation.jpeg'
+        : '/marko-rados-portrait-black.png',
     }))
 }
 
@@ -110,9 +106,23 @@ function fromSanity(members: SanityTeamMember[], locale: 'en' | 'de'): Founder[]
 export function TeamContent({ members }: { members?: SanityTeamMember[] | null }) {
   const { locale } = useLocale()
   const sanityTeam = members ? fromSanity(members, locale) : []
-  // Prefer CMS content when available; otherwise fall back to the built-in copy
-  // so the page always renders even when Sanity is empty or unreachable.
-  const team = sanityTeam.length > 0 ? sanityTeam : fromFounders(locale)
+  const leadership = fromFounders(locale)
+  const team = [
+    ...leadership.map((founder) => {
+      if (founder.name === FOUNDERS.marko.name) return founder
+      const cms = sanityTeam.find((member) => normalizeIdentity(member.name) === normalizeIdentity(founder.name))
+      return cms ? {
+        ...founder,
+        ...cms,
+        role: founder.role,
+        bio: cms.bio || founder.bio,
+        credentials: cms.credentials.length > 0 ? cms.credentials : founder.credentials,
+        contribution: cms.contribution || founder.contribution,
+        imageUrl: cms.imageUrl || founder.imageUrl,
+      } : founder
+    }),
+    ...sanityTeam.filter((member) => !leadership.some((founder) => normalizeIdentity(founder.name) === normalizeIdentity(member.name))),
+  ]
 
   return (
     <>
@@ -121,8 +131,8 @@ export function TeamContent({ members }: { members?: SanityTeamMember[] | null }
           <motion.div {...sectionReveal()} initial={false}>
             <SectionHeader
               titleAs="h1"
-              overline={locale === 'de' ? 'Das Team' : 'The Team'}
-              title={locale === 'de' ? 'Die Gründer' : 'Meet the Founders'}
+              overline="VANE Science"
+              title={locale === 'de' ? 'Das Team' : 'The Team'}
               description={locale === 'de'
                 ? 'VANE verbindet Sportwissenschaft, Performancepraxis und Technologie mit einer gemeinsamen Vision: einen universellen, objektiven Standard zur Messung menschlicher Bewegungsqualität zu schaffen.'
                 : 'VANE brings together sport science, performance practice, and technology around one vision: to create a universal, objective standard for measuring human movement quality.'}
@@ -137,57 +147,32 @@ export function TeamContent({ members }: { members?: SanityTeamMember[] | null }
               team.length > 1 ? 'md:grid-cols-2' : 'mx-auto max-w-5xl'
             }`}
           >
-            {team.map((founder, i) => (
+            {team.map((founder) => (
               <motion.div
-                key={i}
+                key={founder.name}
                 {...staggerItem()}
-                className={`group overflow-hidden rounded-xl border border-border/20 bg-[#0B0C0E] ${
-                  team.length === 1
-                    ? 'lg:grid lg:grid-cols-[0.92fr_1.08fr]'
-                    : ''
-                }`}
+                className="flow-root rounded-xl border border-border/20 bg-[#0B0C0E] p-5 sm:p-6 md:p-7"
               >
-                <div
-                  className={`relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-muted/30 ${
-                    team.length === 1 ? 'md:aspect-[16/9] lg:aspect-auto lg:min-h-[460px]' : ''
-                  }`}
-                >
+                <div className="relative float-left mb-3 mr-4 flex aspect-[3/4] w-[80px] items-center justify-center overflow-hidden rounded-md border border-white/10 bg-black sm:mr-5 sm:w-[108px]">
                   {founder.imageUrl ? (
                     <Image
                       src={founder.imageUrl}
                       alt={founder.name}
                       fill
-                      sizes={
-                        team.length === 1
-                          ? '(max-width: 1023px) 100vw, 46vw'
-                          : '(max-width: 768px) 100vw, 400px'
-                      }
-                      className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.025] motion-reduce:transition-none"
-                      style={{ objectPosition: founder.imagePosition }}
+                      sizes="(max-width: 639px) 80px, 108px"
+                      className={founder.name === FOUNDERS.marko.name ? 'scale-[1.16] object-cover object-[center_38%]' : 'object-cover'}
                     />
                   ) : (
-                    <User className="h-20 w-20 text-muted-foreground/30" />
+                    <User className="h-10 w-10 text-muted-foreground/30" />
                   )}
                 </div>
-                <div
-                  className={`p-6 md:p-8 ${
-                    team.length === 1
-                      ? 'lg:flex lg:flex-col lg:justify-center lg:p-12'
-                      : ''
-                  }`}
-                >
-                  <h2
-                    className={`font-display font-bold uppercase tracking-[0.02em] text-foreground [-webkit-text-stroke:0.15px_currentColor] [paint-order:stroke_fill] ${
-                      team.length === 1
-                        ? 'text-3xl md:text-4xl'
-                        : 'text-xl'
-                    }`}
-                  >
+                <div>
+                  <h2 className="font-display text-2xl font-bold uppercase leading-tight tracking-[0.085em] text-foreground [-webkit-text-stroke:0.15px_currentColor] [paint-order:stroke_fill]">
                     {founder.name}
                   </h2>
-                  <p className="mt-1 text-sm font-medium text-primary">{founder.role}</p>
+                  <p className="mt-1 text-[1.04rem] font-medium text-primary">{founder.role}</p>
                   <div className="mt-4 space-y-4 text-sm leading-relaxed text-muted-foreground">
-                    {founder.bio.split(/(?=He also completed|Zudem absolvierte er)/).filter(Boolean).map((paragraph) => (
+                    {founder.bio.split(/(?=He also completed|Zudem absolvierte er|In late 2014|Ende 2014)/).filter(Boolean).map((paragraph) => (
                       <p key={paragraph}>{paragraph.trim()}</p>
                     ))}
                   </div>
@@ -204,7 +189,7 @@ export function TeamContent({ members }: { members?: SanityTeamMember[] | null }
                     </ul>
                   )}
                   <p className="mt-5 border-t border-white/10 pt-4 text-sm leading-relaxed text-muted-foreground/80">{founder.contribution}</p>
-                  {founder.linkedin && (
+                  {founder.linkedin && founder.name !== FOUNDERS.dario.name && (
                     <div className="mt-4">
                       <a
                         href={founder.linkedin}

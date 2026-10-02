@@ -109,22 +109,21 @@ describe('entry video source lifecycle', () => {
     lifecycle.dispose()
   })
 
-  it.each(audiences)('retains the loaded %s source on ordinary pointer leave', (audience, restTime) => {
+  it.each(audiences)('keeps the %s video playing after pointer leave', (audience, restTime) => {
     const lifecycle = createVideoLifecycle(audience)
     const { video, activatedVideosRef } = lifecycle
     lifecycle.render(true)
     video.currentTime = restTime + 1
     lifecycle.render(true, null)
 
-    expect(video.pause).toHaveBeenCalledOnce()
+    expect(video.pause).not.toHaveBeenCalled()
+    expect(video.play).toHaveBeenCalledTimes(2)
     expect(video.removeAttribute).not.toHaveBeenCalled()
     expect(video.load).not.toHaveBeenCalled()
     expect(video.src).not.toBe('')
     expect(activatedVideosRef.current.has(audience)).toBe(true)
-    vi.advanceTimersByTime(299)
+    vi.advanceTimersByTime(300)
     expect(video.currentTime).toBe(restTime + 1)
-    vi.advanceTimersByTime(1)
-    expect(video.currentTime).toBe(restTime)
     lifecycle.dispose()
   })
 })

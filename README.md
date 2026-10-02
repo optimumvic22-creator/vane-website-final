@@ -32,7 +32,8 @@ npm run launch:check
 
 Read [the latest acceptance report](docs/RELEASE-ACCEPTANCE-2026-09-28.md)
 and [the technical handoff](docs/TECHNICAL-HANDOFF.md) before deployment.
-The current source passed 313 tests and a production build under Node 22.23.2.
+The October 2, 2026 handoff refresh passed lint, TypeScript, 314 tests and a
+production build locally.
 Live Sanity storage, email delivery, hosting, legal approval and real-device
 acceptance are **not** certified by those local checks. `launch:check` is
 expected to block until the required real configuration is supplied.

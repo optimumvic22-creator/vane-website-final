@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 import { MotionConfig } from 'framer-motion'
 import { LocaleProvider, useLocale, type Locale } from '@/lib/locale'
-import { useMotionPaused } from '@/lib/motion-preference'
+import { setMotionPaused, useMotionPaused } from '@/lib/motion-preference'
 import { SiteHeader } from './SiteHeader'
 import { SiteFooter } from './SiteFooter'
 import { CookieBanner } from './CookieBanner'
@@ -64,6 +64,11 @@ export function SiteChrome({
 }) {
   const pathname = usePathname()
   const motionPaused = useMotionPaused()
+
+  useEffect(() => {
+    // The global pause control has been removed; clear older session choices.
+    setMotionPaused(false)
+  }, [])
 
   if (pathname.startsWith('/studio')) {
     return <>{children}</>
