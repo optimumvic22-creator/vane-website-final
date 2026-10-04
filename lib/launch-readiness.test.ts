@@ -12,6 +12,12 @@ const options = { nodeVersion: '22.23.2', impressumSource: 'Approved company inf
 const failed = (result: ReturnType<typeof evaluateLaunchReadiness>) => result.checks.filter(c => !c.passed).map(c => c.id)
 
 describe('offline launch readiness gate', () => {
+  it('accepts Brevo without requiring a Sanity project or delivery bridge', () => {
+    const brevo = { BREVO_API_KEY: 'private-fixture', BREVO_LIST_GLOBAL: '6', BREVO_LIST_ATHLETE: '3',
+      BREVO_LIST_COACH: '4', BREVO_LIST_PARTNER: '5', BREVO_DOI_TEMPLATE_ID: '1' }
+    expect(evaluateLaunchReadiness(brevo, options).blockerCount).toBe(0)
+    expect(failed(evaluateLaunchReadiness({ ...brevo, BREVO_LIST_COACH: '3' }, options))).toContain('brevo-lists')
+  })
   it('fails closed when the required configuration and legal source are absent', () => {
     expect(evaluateLaunchReadiness({}, { nodeVersion: '22.23.2' }).status).toBe('BLOCKED')
   })

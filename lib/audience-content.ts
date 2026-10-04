@@ -62,7 +62,7 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
       headline: "UNDERSTAND HOW YOU MOVE. TRAIN WHAT MATTERS.",
       intro:
         "VANE turns a standardized assessment into one Movement Quality Score, a profile across seven domains, and clear areas to discuss with your coach or therapist.",
-      primaryCta: "Request assessment",
+      primaryCta: "Join the waitlist",
       secondaryCta: "See what you receive",
       heroValueRail: [
         {
@@ -141,11 +141,11 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
         "Clear about what the assessment can and cannot show",
       ],
       finalEyebrow: "Your next step",
-      finalTitle: "Request your assessment in Vienna.",
+      finalTitle: "Join the VANE athlete waitlist.",
       finalText:
-        "Come to the VANE Training Lab in Vienna for a guided assessment and an explanation of your results. Send us your request. Before you book, we discuss the assessment, timing, and cost with you.",
-      finalCta: "Request assessment",
-      finalNote: "This is an inquiry, not a confirmed booking. You are not subscribed to email updates.",
+        "Interested in an assessment at the VANE Training Lab in Vienna? Join the athlete waitlist and we will contact you when assessment places are available. Development updates are a separate, optional choice below.",
+      finalCta: "Join the waitlist",
+      finalNote: "Joining the waitlist does not book an assessment.",
     },
     de: {
       role: "Athlet",
@@ -153,7 +153,7 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
       headline: "Verstehe deine Bewegung. Trainiere, was zählt.",
       intro:
         "VANE übersetzt ein standardisiertes Assessment in einen Movement Quality Score, ein Profil über sieben Domänen und klare Bereiche für das Gespräch mit Coach oder Therapeut.",
-      primaryCta: "Assessment anfragen",
+      primaryCta: "Auf die Warteliste",
       secondaryCta: "Ergebnis ansehen",
       heroValueRail: [
         {
@@ -232,11 +232,11 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
         "Klare Grenzen dessen, was das Assessment zeigen kann",
       ],
       finalEyebrow: "Dein nächster Schritt",
-      finalTitle: "Frag dein Assessment in Wien an.",
+      finalTitle: "Auf die VANE Athleten Warteliste.",
       finalText:
-        "Komm für ein begleitetes Assessment ins VANE Training Lab in Wien. Wir erklären dir deine Ergebnisse. Schick uns deine Anfrage. Vor der Buchung besprechen wir mit dir Ablauf, Dauer und Kosten.",
-      finalCta: "Assessment anfragen",
-      finalNote: "Das ist eine Anfrage, keine bestätigte Buchung. Du wirst nicht für E Mail Updates angemeldet.",
+        "Du interessierst dich für ein Assessment im VANE Training Lab in Wien? Trag dich in die Athleten Warteliste ein. Wir melden uns, sobald Assessment Plätze verfügbar sind. Entwicklungsupdates kannst du unten separat und freiwillig auswählen.",
+      finalCta: "Auf die Warteliste",
+      finalNote: "Der Wartelisteneintrag ist keine Assessment Buchung.",
     },
   },
   coach: {

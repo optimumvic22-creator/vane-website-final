@@ -43,8 +43,8 @@ export default function ImpressumPage() {
           <div>
             <h2 className={sectionHeadingClass}>Kontakt</h2>
             <Body className="mt-2">
-              E-Mail: <a href="mailto:office@vanescience.com" className="underline underline-offset-4">office@vanescience.com</a><br />
-              Online-Anfrage für Assessments: <Link href="/for/athlete#waitlist" className="underline underline-offset-4">Anfrage senden</Link>
+              E-Mail: <a href="mailto:mqs@vanescience.com" className="underline underline-offset-4">mqs@vanescience.com</a><br />
+              Athleten-Warteliste: <Link href="/for/athlete#waitlist" className="underline underline-offset-4">Zur Warteliste</Link>
             </Body>
           </div>
 

@@ -1,9 +1,9 @@
 import { createHash, randomUUID } from 'node:crypto'
 import { createClient } from 'next-sanity'
-import { apiVersion, dataset, projectId } from '@/sanity/env'
 import { parseWaitlistInput } from '@/lib/waitlist-schema'
 import { apiError, guardJsonRequest, noStoreJson } from '@/lib/request-guard'
 import { WAITLIST_UPDATES_CONSENT_VERSION, waitlistUpdatesConsent } from '@/lib/waitlist-consent'
+import { BrevoConfigurationError, saveBrevoWaitlist } from '@/lib/brevo-waitlist'
 
 export async function POST(request: Request) {
   const guarded = await guardJsonRequest(request)
@@ -25,8 +25,21 @@ export async function POST(request: Request) {
     return noStoreJson({ ok: true })
   }
 
+  if (process.env.BREVO_API_KEY) {
+    try {
+      await saveBrevoWaitlist(parsed.data)
+      return noStoreJson({ ok: true })
+    } catch (error) {
+      return apiError(error instanceof BrevoConfigurationError ? 503 : 502,
+        'service_unavailable', 'Could not confirm your signup. Please try again.')
+    }
+  }
+
   const token = process.env.SANITY_API_WRITE_TOKEN
-  if (!token) {
+  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+  const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
+  const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2024-01-01'
+  if (!token || !projectId || !dataset) {
     return apiError(
       503,
       'service_unavailable',

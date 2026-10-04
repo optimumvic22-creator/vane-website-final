@@ -113,8 +113,8 @@ export function AudienceInquiryForm({
             ? 'Die Bestätigung ist gerade nicht verfügbar. Deine Anfrage könnte bereits angekommen sein. Bitte versuche es später erneut.'
             : 'Confirmation is currently unavailable. Your request may already have arrived. Please try again later.'
           : locale === 'de'
-            ? 'Deine Anfrage konnte nicht bestätigt werden. Deine Eingaben bleiben erhalten. Bitte versuche es später erneut oder schreibe an hello@vanescience.com.'
-            : 'Your request could not be confirmed. Your entries are still here. Please try again later or email hello@vanescience.com.',
+            ? 'Deine Anfrage konnte nicht bestätigt werden. Deine Eingaben bleiben erhalten. Bitte versuche es später erneut oder schreibe an mqs@vanescience.com.'
+            : 'Your request could not be confirmed. Your entries are still here. Please try again later or email mqs@vanescience.com.',
       )
       return
     } finally {
@@ -224,7 +224,7 @@ export function AudienceInquiryForm({
         {error && (
           <div role="alert" className="w-full rounded-lg border border-red-300/25 bg-red-950/20 p-4 text-sm leading-relaxed text-red-200">
             <p>{error}</p>
-            <a href="mailto:hello@vanescience.com" className="mt-2 inline-flex min-h-10 items-center underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">hello@vanescience.com</a>
+            <a href="mailto:mqs@vanescience.com" className="mt-2 inline-flex min-h-10 items-center underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">mqs@vanescience.com</a>
           </div>
         )}
         <p className="text-center text-xs text-muted-foreground">{note}</p>

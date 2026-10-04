@@ -1,4 +1,3 @@
-import { client } from '@/sanity/lib/client'
 import { TEAM_MEMBERS } from '@/lib/queries'
 import type { SanityTeamMember } from './team-content'
 
@@ -7,14 +6,15 @@ export const TEAM_REVALIDATE_SECONDS = 3600
 
 // Only this public read is bounded; lead-write clients retain their own policy.
 // Next owns freshness here, without a second CDN or live-invalidation strategy.
-const teamClient = client.withConfig({
-  useCdn: false,
-  perspective: 'published',
-  timeout: TEAM_READ_TIMEOUT_MS,
-  maxRetries: 0,
-})
-
 export async function getTeamMembers(): Promise<SanityTeamMember[] | null> {
+  if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || !process.env.NEXT_PUBLIC_SANITY_DATASET) return null
+  const { client } = await import('@/sanity/lib/client')
+  const teamClient = client.withConfig({
+    useCdn: false,
+    perspective: 'published',
+    timeout: TEAM_READ_TIMEOUT_MS,
+    maxRetries: 0,
+  })
   const controller = new AbortController()
   let timer: ReturnType<typeof setTimeout> | undefined
   const deadline = new Promise<never>((_resolve, reject) => {
