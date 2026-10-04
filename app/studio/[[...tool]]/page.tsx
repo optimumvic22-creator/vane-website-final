@@ -1,14 +1,7 @@
-'use client'
+import { notFound } from 'next/navigation'
 
-import { NextStudio } from 'next-sanity/studio'
-import config from '@/sanity.config'
-
-const origError = console.error
-console.error = (...args: Parameters<typeof console.error>) => {
-  if (typeof args[0] === 'string' && args[0].includes('createGlobalStyle')) return
-  origError(...args)
-}
-
-export default function StudioPage() {
-  return <NextStudio config={config} />
+export default async function StudioPage() {
+  if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || !process.env.NEXT_PUBLIC_SANITY_DATASET) notFound()
+  const { Studio } = await import('./studio')
+  return <Studio />
 }

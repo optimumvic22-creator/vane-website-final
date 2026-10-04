@@ -98,14 +98,14 @@ describe('approved audience copy contract', () => {
     expect(de.processEyebrow).toMatch(/geplant/i)
   })
 
-  it('preserves the athlete request as an available Vienna service, not a booking or update signup', () => {
+  it('offers the requested athlete waitlist without implying an assessment booking', () => {
     const { en, de } = audienceContent.athlete
     expect(en.finalText).toContain('Vienna')
     expect(de.finalText).toContain('Wien')
-    expect(en.finalCta).toBe('Request assessment')
-    expect(de.finalCta).toBe('Assessment anfragen')
-    expect(en.finalNote).toBe('This is an inquiry, not a confirmed booking. You are not subscribed to email updates.')
-    expect(de.finalNote).toBe('Das ist eine Anfrage, keine bestätigte Buchung. Du wirst nicht für E Mail Updates angemeldet.')
+    expect(en.finalCta).toBe('Join the waitlist')
+    expect(de.finalCta).toBe('Auf die Warteliste')
+    expect(en.finalNote).toBe('Joining the waitlist does not book an assessment.')
+    expect(de.finalNote).toBe('Der Wartelisteneintrag ist keine Assessment Buchung.')
   })
 
   it('assigns interpretation to VANE and application decisions to the coach in both languages', () => {

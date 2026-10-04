@@ -29,7 +29,7 @@ const en = {
   segments: ["I'm an individual", 'I represent a gym or clinic', 'I represent a federation'],
   success: "You're on the list. We'll be in touch.",
   successB2b: 'Prefer to talk directly?',
-  successB2bCta: 'Email team@vanescience.com',
+  successB2bCta: 'Email mqs@vanescience.com',
   error: "Something went wrong and your signup wasn't saved. Please try again in a moment.",
 }
 
@@ -45,7 +45,7 @@ const de = {
   segments: ['Ich bin Einzelperson', 'Ich vertrete ein Gym oder eine Klinik', 'Ich vertrete einen Verband'],
   success: 'Du bist auf der Liste. Wir melden uns.',
   successB2b: 'Du willst direkt sprechen?',
-  successB2bCta: 'Schreib uns: team@vanescience.com',
+  successB2bCta: 'Schreib uns: mqs@vanescience.com',
   error: 'Etwas ist schiefgelaufen. Deine Anmeldung wurde nicht gespeichert. Bitte versuche es gleich noch einmal.',
 }
 
@@ -157,7 +157,7 @@ export function CtaSection({ data }: CtaSectionProps) {
                 <div className="mt-2 flex flex-col items-center gap-2">
                   <p className="text-sm text-muted-foreground">{t.successB2b}</p>
                   <a
-                    href="mailto:team@vanescience.com"
+                    href="mailto:mqs@vanescience.com"
                     className="inline-flex items-center gap-2 rounded-full border border-border/30 px-5 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
                   >
                     <Mail className="h-4 w-4" />

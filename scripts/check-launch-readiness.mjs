@@ -16,24 +16,31 @@ export function evaluateLaunchReadiness(env = process.env, options = {}) {
   const [major, minor] = (options.nodeVersion ?? process.versions.node).split('.').map(Number)
   add('runtime', major === 22 && minor >= 12, 'Use Node >=22.12.0 <23 for the release checkout.')
 
-  const project = env.NEXT_PUBLIC_SANITY_PROJECT_ID
-  add('sanity-project', configured(project) && /^[a-z0-9-]+$/.test(project ?? ''), 'Configure the real Sanity project, not the CI placeholder.')
-  add('sanity-dataset', configured(env.NEXT_PUBLIC_SANITY_DATASET) && /^[a-zA-Z0-9_-]+$/.test(env.NEXT_PUBLIC_SANITY_DATASET ?? ''), 'Select the intended Preview or Production dataset.')
-  add('lead-storage', configured(env.SANITY_API_WRITE_TOKEN), 'Configure a server-only lead storage token; its permissions need a separate live check.')
+  if (env.BREVO_API_KEY) {
+    add('brevo-api-key', configured(env.BREVO_API_KEY), 'Configure the server-only Brevo key; verify account access separately.')
+    const listIds = ['GLOBAL', 'ATHLETE', 'COACH', 'PARTNER'].map(name => env[`BREVO_LIST_${name}`])
+    add('brevo-lists', listIds.every(value => /^[1-9]\d*$/.test(value ?? '') && Number.isSafeInteger(Number(value))) && new Set(listIds).size === 4, 'Configure four distinct existing Brevo list IDs.')
+    add('brevo-doi-template', /^[1-9]\d*$/.test(env.BREVO_DOI_TEMPLATE_ID ?? ''), 'Configure the active Brevo confirmation template and verify confirmation separately.')
+  } else {
+    const project = env.NEXT_PUBLIC_SANITY_PROJECT_ID
+    add('sanity-project', configured(project) && /^[a-z0-9-]+$/.test(project ?? ''), 'Configure the real Sanity project, not the CI placeholder.')
+    add('sanity-dataset', configured(env.NEXT_PUBLIC_SANITY_DATASET) && /^[a-zA-Z0-9_-]+$/.test(env.NEXT_PUBLIC_SANITY_DATASET ?? ''), 'Select the intended Preview or Production dataset.')
+    add('lead-storage', configured(env.SANITY_API_WRITE_TOKEN), 'Configure a server-only lead storage token; its permissions need a separate live check.')
 
-  const jobSecret = env.LEAD_DELIVERY_JOB_SECRET
-  const bridgeSecret = env.LEAD_DELIVERY_WEBHOOK_SECRET
-  add('delivery-job-secret', configured(jobSecret) && jobSecret.trim().length >= 32, 'Configure a random scheduler secret of at least 32 characters.')
-  add('delivery-bridge-secret', configured(bridgeSecret) && bridgeSecret.trim().length >= 32, 'Configure a separate random bridge secret of at least 32 characters.')
-  add('separate-delivery-secrets', configured(jobSecret) && configured(bridgeSecret) && jobSecret !== bridgeSecret, 'Scheduler and bridge credentials must be different.')
-  let bridgeUrlValid = false
-  try {
-    const url = new URL(env.LEAD_DELIVERY_WEBHOOK_URL ?? '')
-    bridgeUrlValid = url.protocol === 'https:' && !url.username && !url.password && !url.hash &&
-      !/^(?:localhost|127\.0\.0\.1|\[::1\])$/.test(url.hostname) &&
-      !/(?:^|\.)(?:example\.(?:com|org|net)|invalid|test)$/.test(url.hostname)
-  } catch { /* Missing or invalid URL fails the gate without exposing it. */ }
-  add('delivery-bridge-url', bridgeUrlValid, 'Configure an actual HTTPS bridge without URL credentials or a fragment; test delivery separately.')
+    const jobSecret = env.LEAD_DELIVERY_JOB_SECRET
+    const bridgeSecret = env.LEAD_DELIVERY_WEBHOOK_SECRET
+    add('delivery-job-secret', configured(jobSecret) && jobSecret.trim().length >= 32, 'Configure a random scheduler secret of at least 32 characters.')
+    add('delivery-bridge-secret', configured(bridgeSecret) && bridgeSecret.trim().length >= 32, 'Configure a separate random bridge secret of at least 32 characters.')
+    add('separate-delivery-secrets', configured(jobSecret) && configured(bridgeSecret) && jobSecret !== bridgeSecret, 'Scheduler and bridge credentials must be different.')
+    let bridgeUrlValid = false
+    try {
+      const url = new URL(env.LEAD_DELIVERY_WEBHOOK_URL ?? '')
+      bridgeUrlValid = url.protocol === 'https:' && !url.username && !url.password && !url.hash &&
+        !/^(?:localhost|127\.0\.0\.1|\[::1\])$/.test(url.hostname) &&
+        !/(?:^|\.)(?:example\.(?:com|org|net)|invalid|test)$/.test(url.hostname)
+    } catch { /* Missing or invalid URL fails the gate without exposing it. */ }
+    add('delivery-bridge-url', bridgeUrlValid, 'Configure an actual HTTPS bridge without URL credentials or a fragment; test delivery separately.')
+  }
 
   add('no-public-secrets', !Object.entries(env).some(([key, value]) =>
     key.startsWith('NEXT_PUBLIC_') && /(?:TOKEN|SECRET|PASSWORD|PRIVATE_KEY|WRITE_KEY)/i.test(key) && Boolean(value?.trim())),
@@ -51,7 +58,7 @@ export function evaluateLaunchReadiness(env = process.env, options = {}) {
     blockerCount: blockers,
     checks,
     manualGates: [
-      'Real Sanity permission and anonymous lead privacy checks',
+      env.BREVO_API_KEY ? 'Real Brevo list membership, suppression and consent checks' : 'Real Sanity permission and anonymous lead privacy checks',
       'Preview form persistence, team notification, double opt-in and unsubscribe',
       'Hosting-level abuse controls, TLS, redirects and production headers',
       'Legal approval, media rights and working public contact addresses',

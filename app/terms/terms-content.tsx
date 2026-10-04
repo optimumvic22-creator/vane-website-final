@@ -16,7 +16,7 @@ const en = {
     { heading: '5. External Links', content: 'This website may contain links to external sites. VANE Science GmbH is not responsible for the content or privacy practices of these external sites.' },
     { heading: '6. Modifications', content: 'VANE Science GmbH reserves the right to modify these terms at any time. Changes will be posted on this page with an updated "Last updated" date.' },
     { heading: '7. Governing Law', content: 'These terms are governed by and construed in accordance with the laws of Austria. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the courts in Vienna, Austria.' },
-    { heading: '8. Contact', content: 'For questions about these Terms of Service, contact us at: hello@vanescience.com' },
+    { heading: '8. Contact', content: 'For questions about these Terms of Service, contact us at: mqs@vanescience.com' },
   ],
 }
 
@@ -31,7 +31,7 @@ const de = {
     { heading: '5. Externe Links', content: 'Diese Website kann Links zu externen Seiten enthalten. Die VANE Science GmbH ist nicht verantwortlich für den Inhalt oder die Datenschutzpraktiken dieser externen Seiten.' },
     { heading: '6. Änderungen', content: 'Die VANE Science GmbH behält sich das Recht vor, diese Bedingungen jederzeit zu ändern. Änderungen werden auf dieser Seite mit einem aktualisierten Datum veröffentlicht.' },
     { heading: '7. Anwendbares Recht', content: 'Diese Bedingungen unterliegen dem Recht der Republik Österreich. Für alle Streitigkeiten sind ausschließlich die Gerichte in Wien, Österreich zuständig.' },
-    { heading: '8. Kontakt', content: 'Für Fragen zu diesen Nutzungsbedingungen kontaktieren Sie uns unter: hello@vanescience.com' },
+    { heading: '8. Kontakt', content: 'Für Fragen zu diesen Nutzungsbedingungen kontaktieren Sie uns unter: mqs@vanescience.com' },
   ],
 }
 

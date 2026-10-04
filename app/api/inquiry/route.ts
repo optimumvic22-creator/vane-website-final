@@ -1,6 +1,5 @@
 import { randomUUID } from 'node:crypto'
 import { createClient } from 'next-sanity'
-import { apiVersion, dataset, projectId } from '@/sanity/env'
 import { parseInquiryInput } from '@/lib/inquiry-schema'
 import { apiError, guardJsonRequest, noStoreJson } from '@/lib/request-guard'
 
@@ -24,7 +23,10 @@ export async function POST(request: Request) {
   }
 
   const token = process.env.SANITY_API_WRITE_TOKEN
-  if (!token) {
+  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+  const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
+  const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2024-01-01'
+  if (!token || !projectId || !dataset) {
     return apiError(
       503,
       'service_unavailable',

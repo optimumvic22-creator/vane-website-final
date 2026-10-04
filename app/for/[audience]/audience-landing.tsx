@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/audience-motion-panel'
 import { AudienceVideoPlaylist } from '@/components/ui/audience-video-playlist'
 import { MqsDashboard } from '@/components/ui/mqs-dashboard'
-import { AudienceInquiryForm } from '@/components/ui/audience-inquiry-form'
 import { AudienceWaitlistForm } from '@/components/ui/audience-waitlist-form'
 import { trackEvent } from '@/lib/analytics'
 import { audienceContent, type AudienceSlug } from '@/lib/audience-content'
@@ -671,14 +670,6 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
           <p className="mx-auto mt-6 max-w-[60ch] text-base leading-[1.58] text-muted-foreground md:text-[17px]">
             {copy.finalText}
           </p>
-          {audience === 'athlete' ? (
-            <AudienceInquiryForm
-              audience={audience}
-              locale={locale}
-              cta={copy.finalCta}
-              note={copy.finalNote}
-            />
-          ) : (
             <AudienceWaitlistForm
               key={audience}
               audience={audience}
@@ -686,7 +677,6 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
               cta={copy.finalCta}
               note={copy.finalNote}
             />
-          )}
           <Link href="/" className="mt-10 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
             {locale === 'de' ? 'Andere Zielgruppe wählen' : 'Choose another audience'}
           </Link>

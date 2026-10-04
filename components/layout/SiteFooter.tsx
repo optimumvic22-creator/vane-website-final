@@ -36,8 +36,8 @@ export function SiteFooter() {
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               {locale === 'de' ? 'Wir haben menschlicher Bewegung eine Sprache gegeben. Bewegungsanalyse aus Wien.' : 'We gave human movement a language. Movement quality assessment from Vienna.'}
             </p>
-            <a href="mailto:office@vanescience.com" className={`mt-3 ${footerLinkClass}`}>
-              office@vanescience.com
+            <a href="mailto:mqs@vanescience.com" className={`mt-3 ${footerLinkClass}`}>
+              mqs@vanescience.com
             </a>
             <div className="mt-4 -ml-3 flex gap-1">
               <a href="https://linkedin.com/company/vanescience" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className={socialLinkClass}>
@@ -71,7 +71,7 @@ export function SiteFooter() {
               <Link href="/investors" className={footerLinkClass}>{locale === 'de' ? 'Für Investoren' : 'For investors'}</Link>
               <Link href="/for/athlete#science" className={footerLinkClass}>{locale === 'de' ? 'Einordnung und Grenzen' : 'Interpretation and limits'}</Link>
               <Link href="/for/partner#waitlist" className={footerLinkClass}>{locale === 'de' ? 'Partner Warteliste' : 'Partner waitlist'}</Link>
-              <a href="mailto:team@vanescience.com" className={footerLinkClass}>{locale === 'de' ? 'Karriere' : 'Join us'}</a>
+              <a href="mailto:mqs@vanescience.com" className={footerLinkClass}>{locale === 'de' ? 'Karriere' : 'Join us'}</a>
             </nav>
           </div>
 

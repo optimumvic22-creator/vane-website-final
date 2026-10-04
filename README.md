@@ -2,7 +2,7 @@
 
 Marketing site for **VANE Science** and the **MQS** (Movement Quality Score) — a
 standardized assessment layer for human movement quality. Bilingual (EN/DE),
-content-driven, with an integrated Sanity CMS.
+with built-in content and direct Brevo waitlist integration. Sanity is optional.
 
 ## Start here: partner handoff
 
@@ -17,9 +17,11 @@ Use **Node.js >=22.12.0 <23** and **npm 11.9.0**. From the repository root:
 npm ci
 ```
 
-Copy `.env.example` to `.env.local`, then configure the intended Sanity project
-and dataset. Keep write tokens and delivery secrets server-only. Do not commit
-environment files or use placeholder credentials for production.
+Copy `.env.example` to `.env.local`. The current launch uses built-in content
+and direct Brevo list integration. Configure `BREVO_API_KEY`, the four
+`BREVO_LIST_*` IDs, and `BREVO_DOI_TEMPLATE_ID`. Sanity is optional: leave its
+variables unset to use built-in content and disable `/studio`. Keep credentials
+server-only; do not commit environment files. See [Brevo setup](docs/BREVO-LAUNCH.md).
 
 ```bash
 npm run dev
@@ -34,7 +36,7 @@ Read [the latest acceptance report](docs/RELEASE-ACCEPTANCE-2026-09-28.md)
 and [the technical handoff](docs/TECHNICAL-HANDOFF.md) before deployment.
 The October 2, 2026 handoff refresh passed lint, TypeScript, 314 tests and a
 production build locally.
-Live Sanity storage, email delivery, hosting, legal approval and real-device
+Live provider storage, email delivery, hosting, legal approval and real-device
 acceptance are **not** certified by those local checks. `launch:check` is
 expected to block until the required real configuration is supplied.
 
@@ -60,8 +62,8 @@ npm run check      # lint + typecheck (run before committing)
 
 ## Content
 
-- **CMS content** is edited in the embedded Studio at **`/studio`** (Sanity).
-  Pages fall back to built-in copy when Sanity is empty or unreachable.
+- **Launch content** is edited directly in the source. The optional Sanity
+  Studio at **`/studio`** is disabled until a CMS project is configured.
 - **Founder identity** (name, LinkedIn, CTO placeholder, team-page fallback) is
   consolidated in **`lib/founders.ts`** — edit there to announce the CTO or
   update a founder; the homepage, investors page and team fallback all read
@@ -69,8 +71,8 @@ npm run check      # lint + typecheck (run before committing)
 
 ## Environment
 
-Copy `.env.example` and fill in the Sanity project ID, dataset, and the
-server-only `SANITY_API_WRITE_TOKEN` (needed for waitlist signups). Google
+Copy `.env.example` and configure the server-only Brevo key, four list IDs
+and confirmation template ID described above. Google
 Analytics (`NEXT_PUBLIC_GA_MEASUREMENT_ID`) is optional and loads only after
 cookie consent. Start with the [technical handoff](docs/TECHNICAL-HANDOFF.md),
 use the [current contact and launch contract](docs/MQS-VAULT-LAUNCH-AND-CONTACT.md)

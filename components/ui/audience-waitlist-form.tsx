@@ -14,7 +14,7 @@ export function AudienceWaitlistForm({
   cta,
   note,
 }: {
-  audience: 'coach' | 'partner'
+  audience: 'athlete' | 'coach' | 'partner'
   locale: Locale
   cta: string
   note: string
@@ -156,7 +156,7 @@ export function AudienceWaitlistForm({
         {error && (
           <div role="alert" className="w-full rounded-lg border border-red-300/25 bg-red-950/20 p-4 text-sm leading-relaxed text-red-200">
             <p>{error}</p>
-            <a href="mailto:hello@vanescience.com" className="mt-2 inline-flex min-h-10 items-center underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">hello@vanescience.com</a>
+            <a href="mailto:mqs@vanescience.com" className="mt-2 inline-flex min-h-10 items-center underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">mqs@vanescience.com</a>
           </div>
         )}
         <p className="text-center text-xs leading-relaxed text-muted-foreground">{note}</p>

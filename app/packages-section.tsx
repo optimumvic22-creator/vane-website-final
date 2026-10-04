@@ -84,7 +84,7 @@ const en: Copy = {
     },
   ],
   teamsLine: 'Team testing days and federation programs on request.',
-  teamsCta: 'team@vanescience.com',
+  teamsCta: 'mqs@vanescience.com',
   footnote: 'Launch pricing for the first cohort. Prices excl. VAT.',
 }
 
@@ -138,7 +138,7 @@ const de: Copy = {
     },
   ],
   teamsLine: 'Testtage für Teams und Verbandsprogramme auf Anfrage.',
-  teamsCta: 'team@vanescience.com',
+  teamsCta: 'mqs@vanescience.com',
   footnote: 'Launchpreise für die erste Kohorte. Preise zzgl. USt.',
 }
 
@@ -240,7 +240,7 @@ export function PackagesSection() {
           <p className="text-sm text-muted-foreground">
             {t.teamsLine}{' '}
             <a
-              href="mailto:team@vanescience.com"
+              href="mailto:mqs@vanescience.com"
               className="text-foreground/80 underline decoration-primary/40 underline-offset-4 transition-colors hover:text-primary"
             >
               {t.teamsCta}

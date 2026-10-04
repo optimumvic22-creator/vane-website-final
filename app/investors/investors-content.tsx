@@ -216,7 +216,7 @@ export function InvestorsContent() {
   const { locale } = useLocale()
   const t = locale === 'de' ? de : en
 
-  const mailtoHref = `mailto:team@vanescience.com?subject=${encodeURIComponent(t.ctaSubject)}`
+  const mailtoHref = `mailto:mqs@vanescience.com?subject=${encodeURIComponent(t.ctaSubject)}`
   const availability = locale === 'de'
     ? [
         { title: 'Heute verfügbar', desc: 'Assessments im VANE Training Lab in Wien' },
