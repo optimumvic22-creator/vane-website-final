@@ -431,24 +431,23 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
     en: {
       role: "Partner",
       eyebrow: "For partners",
-      headline: "ADD A MOVEMENT QUALITY STANDARD TO WHAT YOU ALREADY DO WELL.",
+      headline: "Add a movement quality standard to what you already do well.",
       intro:
-        "VANE adds a standardized movement quality assessment and reporting layer to the services, programs, or products you already provide. We start with your existing setup and define a focused pilot around one clear use case.",
+        "We bring MQS into your facility and work closely with your team until it's part of how you work, at the highest level. Your data helps shape the global standard for movement quality.",
       primaryCta: "Join the waitlist",
-      availabilityNote: "MQS access for partners is still in development.",
       secondaryCta: "Explore the partner model",
       heroValueRail: [
         {
-          title: "Build on your existing offer",
-          detail: "Explore where MQS can add value for your users",
+          title: "Build on what you already do.",
+          detail: "MQS fits around your services and equipment.",
         },
         {
-          title: "Start with one practical test",
-          detail: "Agree the scope and responsibilities together",
+          title: "Get your team to expert level.",
+          detail: "We work alongside you from day one.",
         },
         {
-          title: "Decide what comes next",
-          detail: "Review usefulness and practical fit before expanding",
+          title: "Shape the standard.",
+          detail: "Partners help build the global movement-quality reference.",
         },
       ],
       benefitsEyebrow: "Why it matters",
@@ -459,12 +458,12 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
         {
           title: "Add one consistent assessment",
           description:
-            "For example, a training facility could use the same movement assessment at the start of a program and at retest. We agree the fit with your team before testing it.",
+            "A training facility uses the same movement assessment at the start of a program and at retest.",
         },
         {
           title: "Create one shared language",
           description:
-            "Bring results and VANE's interpretation into one profile your team can discuss with its users. Agree who assesses, who explains, and who decides what follows.",
+            "Bring results and the MQS report into one profile your team can discuss with its users. Agree who assesses, who explains, and who decides what follows.",
         },
         {
           title: "Decide what comes next",
@@ -472,7 +471,7 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
             "Check whether the assessment answers your users' questions and fits the way your team works. Decide together what needs to change before wider use.",
         },
       ],
-      processEyebrow: "How we plan to work together",
+      processEyebrow: "How we work together",
       processTitle: "Discover. Pilot. Learn.",
       steps: [
         {
@@ -483,7 +482,7 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
         {
           title: "Pilot",
           description:
-            "We agree on the scope, responsibilities, and success criteria for a limited practical test.",
+            "We agree on the scope, responsibilities, and success criteria for a limited practical test, and we set MQS up with your team.",
         },
         {
           title: "Learn",
@@ -491,7 +490,7 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
             "We review how useful the results are and what is still needed for wider use.",
         },
       ],
-      outputEyebrow: "What the pilot delivers",
+      outputEyebrow: "What the partnership delivers",
       outputTitle: "A model built around your context.",
       outputIntro:
         "The exact scope depends on the partner. The common foundation is a standardized assessment and reporting layer.",
@@ -500,6 +499,7 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
         "Assessment protocol and onboarding",
         "Reports designed for your users",
         "Review of results, limitations, and next steps",
+        "A seat at the table in building the movement-quality standard",
       ],
       decisionLabel: "The decision it supports",
       decisionText:
@@ -507,7 +507,7 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
       scienceEyebrow: "How we assess the evidence",
       scienceTitle: "Evidence before expansion.",
       scienceText:
-        "We agree what a practical test needs to show, then review the results and data quality together. That gives both teams a basis for deciding whether to expand. Findings from a limited test are not proof of medical or performance outcomes.",
+        "We agree up front what success looks like and review the results together before scaling up.",
       sciencePoints: [
         "Agree what the assessment can and cannot show",
         "Data quality reviewed before scale",
@@ -516,7 +516,7 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
       finalEyebrow: "MQS for partners",
       finalTitle: "Join the MQS waitlist.",
       finalText:
-        "Interested in bringing MQS into your facility, service, or product? MQS access for partners is still in development. Join the waitlist and we will contact you when access is available. Development updates are a separate, optional choice below.",
+        "Interested in bringing MQS into your facility? Join the waitlist and we'll be in touch.",
       finalCta: "Join the waitlist",
       finalNote:
         "Joining the waitlist does not give you access or start a trial.",
@@ -526,22 +526,21 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
       eyebrow: "Für Partner",
       headline: "ERGÄNZE DEIN ANGEBOT UM EINEN STANDARD FÜR BEWEGUNGS\u00ADQUALITÄT.",
       intro:
-        "VANE ergänzt deine bestehenden Angebote, Programme oder Produkte um ein standardisiertes Assessment und Reporting für Bewegungsqualität. Wir beginnen mit deinem bestehenden Ablauf und definieren einen fokussierten Pilot für einen klaren Anwendungsfall.",
+        "Wir bringen MQS in deine Einrichtung und arbeiten eng mit deinem Team zusammen, bis es auf höchstem Niveau zu eurem Arbeitsalltag gehört. Eure Daten helfen, den globalen Standard für Bewegungsqualität mitzugestalten.",
       primaryCta: "Auf die Warteliste",
-      availabilityNote: "Der MQS Zugang für Partner ist noch in Entwicklung.",
       secondaryCta: "Partnermodell ansehen",
       heroValueRail: [
         {
-          title: "Ergänze dein bestehendes Angebot",
-          detail: "Prüfe, wo MQS deinen Nutzern weiterhilft",
+          title: "Baue auf dem auf, was du bereits tust.",
+          detail: "MQS ergänzt deine Angebote und deine Ausstattung.",
         },
         {
-          title: "Beginne mit einem Praxistest",
-          detail: "Vereinbart Umfang und Zuständigkeiten gemeinsam",
+          title: "Bring dein Team auf Expertenniveau.",
+          detail: "Wir begleiten euch vom ersten Tag an.",
         },
         {
-          title: "Entscheide, was als Nächstes kommt",
-          detail: "Prüft Nutzen und Aufwand vor einem breiteren Einsatz",
+          title: "Gestalte den Standard mit.",
+          detail: "Partner bauen die globale Referenz für Bewegungsqualität mit auf.",
         },
       ],
       benefitsEyebrow: "Warum es zählt",
@@ -552,12 +551,12 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
         {
           title: "Ergänze ein einheitliches Assessment",
           description:
-            "Ein Trainingszentrum könnte zum Beispiel zu Beginn eines Programms und beim Retest dasselbe Assessment nutzen. Vor dem Praxistest klären wir mit deinem Team, wie MQS dazu passt.",
+            "Ein Trainingszentrum nutzt zu Beginn eines Programms und beim Retest dasselbe Bewegungsassessment.",
         },
         {
           title: "Schaffe eine gemeinsame Sprache",
           description:
-            "Ergebnisse und VANEs Einordnung bilden ein Profil, das dein Team mit seinen Nutzern besprechen kann. Wir klären, wer erfasst, wer erklärt und wer die nächsten Schritte bestimmt.",
+            "Ergebnisse und der MQS Bericht bilden ein Profil, das dein Team mit seinen Nutzern besprechen kann. Wir klären, wer erfasst, wer erklärt und wer die nächsten Schritte bestimmt.",
         },
         {
           title: "Entscheide, was danach folgt",
@@ -565,7 +564,7 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
             "Prüft, ob das Assessment die Fragen eurer Nutzer beantwortet und in eure tägliche Arbeit passt. Entscheidet gemeinsam, was sich vor einem breiteren Einsatz ändern muss.",
         },
       ],
-      processEyebrow: "So ist die Zusammenarbeit geplant",
+      processEyebrow: "So arbeiten wir zusammen",
       processTitle: "Verstehen. Testen. Auswerten.",
       steps: [
         {
@@ -576,7 +575,7 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
         {
           title: "In der Praxis testen",
           description:
-            "Wir vereinbaren Umfang, Zuständigkeiten und Erfolgskriterien für einen begrenzten Praxistest.",
+            "Wir vereinbaren Umfang, Zuständigkeiten und Erfolgskriterien für einen begrenzten Praxistest und richten MQS gemeinsam mit deinem Team ein.",
         },
         {
           title: "Gemeinsam auswerten",
@@ -584,7 +583,7 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
             "Wir prüfen, welchen Nutzen die Ergebnisse bringen und was für einen breiteren Einsatz noch nötig ist.",
         },
       ],
-      outputEyebrow: "Was der Praxistest liefert",
+      outputEyebrow: "Was die Partnerschaft bietet",
       outputTitle: "Ein Modell rund um deinen Kontext.",
       outputIntro:
         "Den Umfang stimmen wir auf deinen Bedarf ab. Die gemeinsame Grundlage sind standardisierte Assessments und verständliche Berichte.",
@@ -593,6 +592,7 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
         "Assessmentprotokoll und Einführung",
         "Berichte für deine Nutzer",
         "Prüfung von Ergebnissen, Grenzen und nächsten Schritten",
+        "Die Möglichkeit, den Standard für Bewegungsqualität mitzugestalten",
       ],
       decisionLabel: "Die Frage für deine Organisation",
       decisionText:
@@ -600,7 +600,7 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
       scienceEyebrow: "So prüfen wir die Evidenz",
       scienceTitle: "Erst prüfen. Dann erweitern.",
       scienceText:
-        "Wir vereinbaren, was der Praxistest zeigen soll, und prüfen Ergebnisse und Datenqualität gemeinsam. So können beide Teams entscheiden, ob ein breiterer Einsatz sinnvoll ist. Ein begrenzter Test ist kein Nachweis für medizinische Wirkungen oder Leistungssteigerungen.",
+        "Wir legen vorab fest, woran wir Erfolg erkennen, und prüfen die Ergebnisse gemeinsam, bevor wir den Einsatz ausweiten.",
       sciencePoints: [
         "Klären, was das Assessment zeigen kann und was nicht",
         "Datenqualität vor einer Skalierung prüfen",
@@ -609,7 +609,7 @@ export const audienceContent: Record<AudienceSlug, LocalizedAudience> = {
       finalEyebrow: "MQS für Partner",
       finalTitle: "Auf die MQS Warteliste.",
       finalText:
-        "Du möchtest MQS in deiner Einrichtung, deinem Angebot oder deinem Produkt nutzen? Der MQS Zugang für Partner ist noch in Entwicklung. Trag dich ein. Wir melden uns, sobald der Zugang verfügbar ist. Neuigkeiten zur Entwicklung kannst du unten zusätzlich auswählen.",
+        "Du möchtest MQS in deine Einrichtung bringen? Trag dich auf die Warteliste ein. Wir melden uns bei dir.",
       finalCta: "Auf die Warteliste",
       finalNote:
         "Der Wartelisteneintrag schaltet keinen Zugang frei und startet keine Testphase.",

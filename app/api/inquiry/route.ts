@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto'
+import { createHash, randomUUID } from 'node:crypto'
 import { createClient } from 'next-sanity'
 import { apiVersion, dataset, projectId } from '@/sanity/env'
 import { parseInquiryInput } from '@/lib/inquiry-schema'
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     )
   }
 
-  const { email, audience, context, message, locale, source, company } = parsed.data
+  const { email, audience, context, message, locale, source, company, idempotencyKey } = parsed.data
 
   if (company) {
     return noStoreJson({ ok: true })
@@ -35,10 +35,14 @@ export async function POST(request: Request) {
   const writeClient = createClient({ projectId, dataset, apiVersion, useCdn: false, token })
 
   try {
-    await writeClient.create({
+    // Domain-separated hashes keep identifiers private and stable without
+    // encoding contact details or exposing the client token in a document ID.
+    const key = idempotencyKey?.toLowerCase()
+    const digest = (purpose: string) => createHash('sha256').update(`${purpose}:${key}`).digest('hex')
+    const document = {
       // Dotted IDs keep lead details inaccessible to unauthenticated Sanity reads.
-      _id: `vane.inquiry.${randomUUID()}`,
-      _type: 'audienceInquiry',
+      _id: `vane.inquiry.${key ? digest('inquiry-record-v1') : randomUUID()}`,
+      _type: 'audienceInquiry' as const,
       email: email.trim().toLowerCase(),
       audience,
       context,
@@ -51,8 +55,20 @@ export async function POST(request: Request) {
       // authenticated worker delivers it; success here only means saved.
       deliveryStatus: 'pending',
       deliveryAttempts: 0,
-      deliveryEventId: randomUUID(),
-    })
+      deliveryEventId: key ? digest('inquiry-event-v1') : randomUUID(),
+    }
+    if (key) {
+      // Sanity performs this atomically. A retry must not reset delivery state
+      // or silently acknowledge a changed payload under the same key.
+      const stored = await writeClient.createIfNotExists(document)
+      if (stored.email !== document.email || stored.audience !== document.audience ||
+          stored.context !== document.context || (stored.message ?? undefined) !== document.message ||
+          (stored.locale ?? undefined) !== document.locale || (stored.source ?? undefined) !== document.source) {
+        return apiError(409, 'idempotency_conflict', 'This request has changed. Please submit it again.')
+      }
+    } else {
+      await writeClient.create(document)
+    }
     return noStoreJson({ ok: true })
   } catch {
     return apiError(

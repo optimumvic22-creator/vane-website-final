@@ -8,9 +8,10 @@ process.env.NEXT_PUBLIC_SANITY_DATASET = 'test'
 process.env.NEXT_PUBLIC_SANITY_PROJECT_ID = 'test-project'
 
 const createMock = vi.fn(async (doc: Record<string, unknown>) => ({ _id: 'inquiry-id', ...doc }))
+const createIfNotExistsMock = vi.fn(async (doc: Record<string, unknown>) => doc)
 
 vi.mock('next-sanity', () => ({
-  createClient: vi.fn(() => ({ create: createMock })),
+  createClient: vi.fn(() => ({ create: createMock, createIfNotExists: createIfNotExistsMock })),
 }))
 
 const validBody = {
@@ -53,6 +54,7 @@ describe('POST /api/inquiry', () => {
 
   beforeEach(() => {
     createMock.mockReset()
+    createIfNotExistsMock.mockReset()
     process.env.SANITY_API_WRITE_TOKEN = 'test-token'
   })
 
@@ -86,6 +88,60 @@ describe('POST /api/inquiry', () => {
       expect(response.status).toBe(200)
       expect(await response.json()).toEqual({ ok: true })
     }
+  })
+
+  it('atomically reuses one private record and event after a lost response and retry', async () => {
+    const records = new Map<string, Record<string, unknown>>()
+    createIfNotExistsMock.mockImplementation(async (doc) => {
+      const id = String(doc._id)
+      if (!records.has(id)) records.set(id, { ...doc })
+      return records.get(id)!
+    })
+    const body = { ...validBody, idempotencyKey: 'a87a66d0-c331-45e7-bafb-9e2cb8155550' }
+    const first = await callPost(body)
+    expect(first.status).toBe(200)
+    // Simulate the request being saved while the response never reaches the form.
+    const stored = records.values().next().value!
+    stored.deliveryStatus = 'processing'
+    stored.deliveryAttempts = 1
+    const second = await callPost(body)
+
+    expect(second.status).toBe(200)
+    expect(await second.json()).toEqual({ ok: true })
+    expect(records.size).toBe(1)
+    expect(createMock).not.toHaveBeenCalled()
+    expect(createIfNotExistsMock).toHaveBeenCalledTimes(2)
+    const [firstDoc, retryDoc] = createIfNotExistsMock.mock.calls.map(([doc]) => doc)
+    expect(firstDoc._id).toBe(retryDoc._id)
+    expect(firstDoc.deliveryEventId).toBe(retryDoc.deliveryEventId)
+    expect(firstDoc._id).toMatch(/^vane\.inquiry\.[a-f0-9]{64}$/)
+    expect(String(firstDoc._id)).not.toContain(body.email)
+    expect(stored).toMatchObject({ deliveryStatus: 'processing', deliveryAttempts: 1 })
+  })
+
+  it('rejects a changed payload under the same key without overwriting the original', async () => {
+    let stored: Record<string, unknown> | undefined
+    createIfNotExistsMock.mockImplementation(async (doc) => {
+      stored ??= { ...doc }
+      return stored
+    })
+    const body = { ...validBody, idempotencyKey: 'ca11ab1e-7539-4501-80be-4c79b560765c' }
+    expect((await callPost(body)).status).toBe(200)
+    const response = await callPost({ ...body, message: 'A different request.' })
+
+    expect(response.status).toBe(409)
+    expect(await response.json()).toMatchObject({ ok: false, code: 'idempotency_conflict' })
+    expect(stored?.message).toBe(body.message)
+    expect(createMock).not.toHaveBeenCalled()
+  })
+
+  it('rejects malformed idempotency keys before any storage call', async () => {
+    for (const idempotencyKey of ['reused', '00000000-0000-0000-0000-000000000000', 42]) {
+      const response = await callPost({ ...validBody, idempotencyKey })
+      expect(response.status).toBe(400)
+    }
+    expect(createMock).not.toHaveBeenCalled()
+    expect(createIfNotExistsMock).not.toHaveBeenCalled()
   })
 
   it('queues an athlete request without subscribing the athlete to marketing', async () => {

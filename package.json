@@ -15,6 +15,7 @@
     "check": "npm run lint && npm run typecheck",
     "test": "vitest run",
     "smoke": "node scripts/smoke.mjs",
+    "media:check": "node scripts/check-media.mjs",
     "launch:check": "node --env-file-if-exists=.env.local scripts/check-launch-readiness.mjs",
     "launch:privacy": "node --env-file-if-exists=.env.local scripts/check-lead-privacy.mjs"
   },

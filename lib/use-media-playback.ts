@@ -5,11 +5,13 @@ import { getMotionPaused, subscribeMotionPreference } from './motion-preference'
 
 type MediaPlaybackOptions = {
   minVisibleRatio?: number
+  sourceRetentionMs?: number
 }
 
 /** No media request is eligible until viewport and browser preferences are known. */
 export function useMediaPlayback<T extends HTMLElement = HTMLElement>({
   minVisibleRatio = 0.2,
+  sourceRetentionMs = 1500,
 }: MediaPlaybackOptions = {}) {
   const mediaContainerRef = useRef<T>(null)
   const [mediaAllowed, setMediaAllowed] = useState(false)
@@ -27,13 +29,36 @@ export function useMediaPlayback<T extends HTMLElement = HTMLElement>({
     ).connection
     let isInView = false
     let sourceWasAllowed = false
+    let evictionTimer: ReturnType<typeof setTimeout> | undefined
+    const cancelEviction = () => {
+      if (evictionTimer !== undefined) globalThis.clearTimeout(evictionTimer)
+      evictionTimer = undefined
+    }
+    const releaseSource = () => {
+      cancelEviction()
+      sourceWasAllowed = false
+      setMediaSourceAllowed(false)
+    }
     const updateEligibility = () => {
-      const visibleAndOnline = isInView && document.visibilityState === 'visible' && !connection?.saveData
-      const canPlay = visibleAndOnline && !motionQuery.matches && !getMotionPaused()
-      // Preserve the current frame on pause, but release offscreen/background media.
-      sourceWasAllowed = visibleAndOnline && (sourceWasAllowed || canPlay)
-      setMediaSourceAllowed(sourceWasAllowed)
+      const visible = isInView && document.visibilityState === 'visible'
+      const motionDisabled = motionQuery.matches || Boolean(connection?.saveData)
+      const canPlay = visible && !motionDisabled && !getMotionPaused()
+      // Playback stops immediately. Keeping an already attached source briefly
+      // avoids rewinding/rebuffering at a viewport boundary or a quick tab switch.
       setMediaAllowed(canPlay)
+      if (motionDisabled) {
+        releaseSource()
+      } else if (visible) {
+        cancelEviction()
+        // A manual pause keeps the frame, but never initiates a new media load.
+        sourceWasAllowed = sourceWasAllowed || canPlay
+        setMediaSourceAllowed(sourceWasAllowed)
+      } else if (sourceWasAllowed && evictionTimer === undefined) {
+        if (sourceRetentionMs <= 0) releaseSource()
+        else evictionTimer = globalThis.setTimeout(releaseSource, sourceRetentionMs)
+      } else if (!sourceWasAllowed) {
+        setMediaSourceAllowed(false)
+      }
     }
 
     document.addEventListener('visibilitychange', updateEligibility)
@@ -82,13 +107,14 @@ export function useMediaPlayback<T extends HTMLElement = HTMLElement>({
     }
 
     return () => {
+      cancelEviction()
       stopObserving()
       document.removeEventListener('visibilitychange', updateEligibility)
       motionQuery.removeEventListener('change', updateEligibility)
       connection?.removeEventListener('change', updateEligibility)
       stopPreferenceListener()
     }
-  }, [minVisibleRatio])
+  }, [minVisibleRatio, sourceRetentionMs])
 
   return { mediaContainerRef, mediaAllowed, mediaSourceAllowed }
 }

@@ -37,7 +37,7 @@ const observerConstructor = vi.fn(function (
   return { observe, disconnect }
 })
 
-function start(options: { minVisibleRatio?: number } = {}) {
+function start(options: { minVisibleRatio?: number; sourceRetentionMs?: number } = {}) {
   // eslint-disable-next-line react-hooks/rules-of-hooks -- React is mocked to exercise the effect directly.
   const result = useMediaPlayback(options)
   const effectCleanup = hook.effect?.()
@@ -50,6 +50,7 @@ function intersect(ratio: number, isIntersecting = true) {
 }
 
 beforeEach(() => {
+  vi.useFakeTimers()
   setMotionPaused(false)
   vi.clearAllMocks()
   hook.stateCalls = 0
@@ -79,11 +80,12 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup?.()
+  vi.useRealTimers()
   vi.unstubAllGlobals()
 })
 
 describe('useMediaPlayback eligibility', () => {
-  it('retains a loaded frame on manual pause and releases it when offscreen', () => {
+  it('retains a loaded frame on manual pause and evicts it after an offscreen grace period', () => {
     start()
     intersect(1)
     expect(hook.setSourceState).toHaveBeenLastCalledWith(true)
@@ -91,9 +93,72 @@ describe('useMediaPlayback eligibility', () => {
     expect(hook.setState).toHaveBeenLastCalledWith(false)
     expect(hook.setSourceState).toHaveBeenLastCalledWith(true)
     intersect(0, false)
+    expect(hook.setSourceState).toHaveBeenLastCalledWith(true)
+    vi.advanceTimersByTime(1500)
     expect(hook.setSourceState).toHaveBeenLastCalledWith(false)
     intersect(1)
     expect(hook.setSourceState).toHaveBeenLastCalledWith(false)
+  })
+
+  it('pauses immediately below threshold but retains the source through quick re-entry', () => {
+    start()
+    intersect(0.2)
+    intersect(0.199)
+    expect(hook.setState).toHaveBeenLastCalledWith(false)
+    expect(hook.setSourceState).toHaveBeenLastCalledWith(true)
+    vi.advanceTimersByTime(1499)
+    intersect(0.2)
+    vi.advanceTimersByTime(1500)
+    expect(hook.setState).toHaveBeenLastCalledWith(true)
+    expect(hook.setSourceState).toHaveBeenLastCalledWith(true)
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('pauses a hidden tab immediately and evicts after the configured grace period', () => {
+    start({ sourceRetentionMs: 400 })
+    intersect(1)
+    documentTarget.visibilityState = 'hidden'
+    documentTarget.dispatchEvent(new Event('visibilitychange'))
+    expect(hook.setState).toHaveBeenLastCalledWith(false)
+    expect(hook.setSourceState).toHaveBeenLastCalledWith(true)
+    vi.advanceTimersByTime(400)
+    expect(hook.setSourceState).toHaveBeenLastCalledWith(false)
+  })
+
+  it.each(['reduce-motion', 'save-data'])('immediately releases a retained source for %s', (preference) => {
+    start()
+    intersect(1)
+    intersect(0, false)
+    if (preference === 'reduce-motion') {
+      motion.matches = true
+      motion.dispatchEvent(new Event('change'))
+    } else {
+      connection.saveData = true
+      connection.dispatchEvent(new Event('change'))
+    }
+    expect(hook.setState).toHaveBeenLastCalledWith(false)
+    expect(hook.setSourceState).toHaveBeenLastCalledWith(false)
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('allows immediate eviction explicitly', () => {
+    start({ sourceRetentionMs: 0 })
+    intersect(1)
+    intersect(0, false)
+    expect(hook.setSourceState).toHaveBeenLastCalledWith(false)
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('cancels pending eviction on cleanup', () => {
+    start()
+    intersect(1)
+    intersect(0, false)
+    cleanup?.()
+    cleanup = undefined
+    hook.setSourceState.mockClear()
+    vi.advanceTimersByTime(1500)
+    expect(hook.setSourceState).not.toHaveBeenCalled()
+    expect(vi.getTimerCount()).toBe(0)
   })
 
   it('does not load video for initially reduced motion or data saver', () => {

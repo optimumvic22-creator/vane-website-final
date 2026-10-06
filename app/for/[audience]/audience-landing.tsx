@@ -7,15 +7,11 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { AmbientVideo } from '@/components/ui/ambient-video'
 import { Container } from '@/components/ui/container'
-import {
-  AudienceMotionPanel,
-  type AudienceMotionClip,
-  type AudienceMotionMode,
-} from '@/components/ui/audience-motion-panel'
+import type { AudienceMotionClip, AudienceMotionMode } from '@/components/ui/audience-motion-panel'
 import { AudienceVideoPlaylist } from '@/components/ui/audience-video-playlist'
 import { MqsDashboard } from '@/components/ui/mqs-dashboard'
-import { AudienceInquiryForm } from '@/components/ui/audience-inquiry-form'
-import { AudienceWaitlistForm } from '@/components/ui/audience-waitlist-form'
+import { AudienceContactForm } from '@/components/ui/audience-contact-form'
+import { PartnerPartnershipSections } from '@/components/ui/partner-partnership-sections'
 import { trackEvent } from '@/lib/analytics'
 import { audienceContent, type AudienceSlug } from '@/lib/audience-content'
 import { useLocale } from '@/lib/locale'
@@ -236,11 +232,8 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
   const copy = audienceContent[audience][locale]
   const scienceImage = scienceMedia[audience]
   const motionSet = audienceMotion[audience]
-  const motionLabels =
-    locale === 'de'
-      ? { play: 'Abspielen', pause: 'Pause', replay: 'Wiederholen' }
-      : { play: 'Play', pause: 'Pause', replay: 'Replay' }
   const secondaryHref = audience === 'athlete' ? '#results' : '#how-it-works'
+  const headingTracking = audience === 'partner' ? 'tracking-[0.035em]' : undefined
 
   const trackCta = (location: string) => {
     trackEvent('audience_cta_click', { audience, location })
@@ -271,9 +264,10 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
                 aria-label={stripSoftHyphens(copy.headline)}
                 className={cn(
                   'audience-hero-title mt-3.5 max-w-4xl break-normal font-display text-[clamp(2.75rem,12vw,3rem)] font-bold uppercase leading-[0.94] tracking-[0.02em] text-foreground [-webkit-text-stroke:0.2px_currentColor] [hyphens:manual] [paint-order:stroke_fill] sm:text-6xl md:mt-4 md:text-7xl lg:text-7xl xl:text-[5rem] 2xl:text-8xl',
+                  headingTracking,
                   locale === 'de' &&
                     audience === 'partner' &&
-                    'tracking-[0.01em] sm:tracking-[0.02em] max-[359px]:text-[2.15rem] max-[359px]:tracking-0',
+                    'tracking-[0.02em] sm:tracking-[0.035em] max-[359px]:text-[2.15rem] max-[359px]:tracking-[0.01em] lg:text-[clamp(3.875rem,6.05vw,4.5rem)] xl:text-[5rem] 2xl:text-8xl',
                 )}
               >
                 {locale === 'de' && audience === 'partner'
@@ -337,6 +331,8 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
         </Container>
       </section>
 
+      {audience === 'partner' && <PartnerPartnershipSections locale={locale} />}
+
       <section
         id="benefits"
         className={cn(
@@ -377,7 +373,7 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
                 <AudienceEyebrow>{copy.benefitsEyebrow}</AudienceEyebrow>
                 <h2
                   aria-label={stripSoftHyphens(copy.benefitsTitle)}
-                  className="mt-3.5 break-normal font-display text-5xl font-bold uppercase leading-[0.96] tracking-[0.02em] text-foreground [-webkit-text-stroke:0.2px_currentColor] [hyphens:manual] [paint-order:stroke_fill] [text-wrap:balance] md:mt-4 md:text-6xl"
+                  className={cn('mt-3.5 break-normal font-display text-5xl font-bold uppercase leading-[0.96] tracking-[0.02em] text-foreground [-webkit-text-stroke:0.2px_currentColor] [hyphens:manual] [paint-order:stroke_fill] [text-wrap:balance] md:mt-4 md:text-6xl', headingTracking)}
                 >
                   {copy.benefitsTitle}
                 </h2>
@@ -473,7 +469,7 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
                       className={cn(
                         'font-sans text-2xl font-medium leading-[1.2] tracking-[-0.02em] text-foreground md:text-[1.75rem]',
                         (audience === 'athlete' || audience === 'coach') && 'md:text-[1.6rem]',
-                        audience === 'partner' && 'md:text-[1.65rem]',
+                        audience === 'partner' && 'tracking-normal md:text-[1.65rem]',
                       )}
                     >
                       {benefit.title}
@@ -500,49 +496,21 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             <AudienceEyebrow>{copy.processEyebrow}</AudienceEyebrow>
-            <h2 className="mt-3.5 font-display text-5xl font-bold uppercase leading-[0.96] tracking-[0.02em] text-foreground [-webkit-text-stroke:0.2px_currentColor] [paint-order:stroke_fill] md:mt-4 md:text-[4rem]">
+            <h2 className={cn('mt-3.5 font-display text-5xl font-bold uppercase leading-[0.96] tracking-[0.02em] text-foreground [-webkit-text-stroke:0.2px_currentColor] [paint-order:stroke_fill] md:mt-4 md:text-[4rem]', headingTracking)}>
               {copy.processTitle}
             </h2>
           </div>
-          {motionSet.placement === 'process' && audience !== 'coach' ? (
-            <div className="mt-14 grid gap-4 lg:grid-cols-[minmax(300px,0.86fr)_minmax(0,1.14fr)] lg:grid-rows-3 lg:gap-x-10">
+          <div className="mt-12 grid gap-px overflow-hidden rounded-xl border border-white/10 bg-white/10 md:grid-cols-3">
+            {copy.steps.map((step, index) => (
               <ProcessStepCard
-                step={copy.steps[0]}
-                index={0}
-                className="lg:col-start-2 lg:row-start-1"
+                key={step.title}
+                step={step}
+                index={index}
+                className={audience === 'partner' ? '[&_h3]:tracking-[0.035em]' : undefined}
+                joined
               />
-              <AudienceMotionPanel
-                clips={motionSet.clips}
-                mode={motionSet.mode}
-                caption={motionSet.caption[locale]}
-                labels={motionLabels}
-                locale={locale}
-                className="my-3 lg:col-start-1 lg:row-span-3 lg:row-start-1 lg:my-0 lg:self-center"
-              />
-              {copy.steps.slice(1).map((step, index) => (
-                <ProcessStepCard
-                  key={step.title}
-                  step={step}
-                  index={index + 1}
-                  className={cn(
-                    'lg:col-start-2',
-                    index === 0 ? 'lg:row-start-2' : 'lg:row-start-3',
-                  )}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="mt-12 grid gap-px overflow-hidden rounded-xl border border-white/10 bg-white/10 md:grid-cols-3">
-              {copy.steps.map((step, index) => (
-                <ProcessStepCard
-                  key={step.title}
-                  step={step}
-                  index={index}
-                  joined
-                />
-              ))}
-            </div>
-          )}
+            ))}
+          </div>
         </Container>
       </section>
 
@@ -573,7 +541,7 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
               <AudienceEyebrow className="text-white/88">
                 {copy.outputEyebrow}
               </AudienceEyebrow>
-              <h2 className="mt-3.5 font-display text-5xl font-bold uppercase leading-[0.96] tracking-[0.02em] text-white [-webkit-text-stroke:0.2px_currentColor] [paint-order:stroke_fill] drop-shadow-[0_2px_12px_rgba(0,0,0,0.42)] md:mt-4 md:text-[4rem]">
+              <h2 className={cn('mt-3.5 font-display text-5xl font-bold uppercase leading-[0.96] tracking-[0.02em] text-white [-webkit-text-stroke:0.2px_currentColor] [paint-order:stroke_fill] drop-shadow-[0_2px_12px_rgba(0,0,0,0.42)] md:mt-4 md:text-[4rem]', headingTracking)}>
                 {copy.outputTitle}
               </h2>
               <p className="mt-6 max-w-[60ch] text-base leading-[1.58] text-white/82 md:text-[17px]">
@@ -611,7 +579,7 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
           <div className="grid gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-24">
             <div>
               <AudienceEyebrow>{copy.scienceEyebrow}</AudienceEyebrow>
-              <h2 className="mt-3.5 font-display text-5xl font-bold uppercase leading-[0.96] tracking-[0.02em] text-foreground [-webkit-text-stroke:0.2px_currentColor] [paint-order:stroke_fill] md:mt-4 md:text-[4rem]">
+              <h2 className={cn('mt-3.5 font-display text-5xl font-bold uppercase leading-[0.96] tracking-[0.02em] text-foreground [-webkit-text-stroke:0.2px_currentColor] [paint-order:stroke_fill] md:mt-4 md:text-[4rem]', headingTracking)}>
                 {copy.scienceTitle}
               </h2>
               <p className="mt-6 max-w-[60ch] text-base leading-[1.58] text-muted-foreground md:text-[17px]">
@@ -664,29 +632,20 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
           <AudienceEyebrow>{copy.finalEyebrow}</AudienceEyebrow>
           <h2
             aria-label={stripSoftHyphens(copy.finalTitle)}
-            className="mx-auto mt-3.5 max-w-4xl break-normal font-display text-5xl font-bold uppercase leading-[0.96] tracking-[0.02em] text-foreground [-webkit-text-stroke:0.2px_currentColor] [hyphens:manual] [paint-order:stroke_fill] md:mt-4 md:text-7xl"
+            className={cn('mx-auto mt-3.5 max-w-4xl break-normal font-display text-5xl font-bold uppercase leading-[0.96] tracking-[0.02em] text-foreground [-webkit-text-stroke:0.2px_currentColor] [hyphens:manual] [paint-order:stroke_fill] md:mt-4 md:text-7xl', headingTracking)}
           >
             {copy.finalTitle}
           </h2>
           <p className="mx-auto mt-6 max-w-[60ch] text-base leading-[1.58] text-muted-foreground md:text-[17px]">
             {copy.finalText}
           </p>
-          {audience === 'athlete' ? (
-            <AudienceInquiryForm
-              audience={audience}
-              locale={locale}
-              cta={copy.finalCta}
-              note={copy.finalNote}
-            />
-          ) : (
-            <AudienceWaitlistForm
-              key={audience}
-              audience={audience}
-              locale={locale}
-              cta={copy.finalCta}
-              note={copy.finalNote}
-            />
-          )}
+          <AudienceContactForm
+            key={audience}
+            audience={audience}
+            locale={locale}
+            cta={copy.finalCta}
+            note={copy.finalNote}
+          />
           <Link href="/" className="mt-10 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
             {locale === 'de' ? 'Andere Zielgruppe wählen' : 'Choose another audience'}
           </Link>

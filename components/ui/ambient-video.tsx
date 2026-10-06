@@ -6,19 +6,30 @@ import { cn } from '@/lib/utils'
 
 type AmbientVideoProps = {
   src: string
+  poster?: string
   className?: string
 }
 
 /**
  * Decorative background video that loads and plays only in the viewport.
  * Reduced motion, data saver, hidden tabs, and playback
- * errors fall back to the section background without transferring more media.
+ * errors fall back to the poster without transferring more video.
  */
-export function AmbientVideo({ src, className }: AmbientVideoProps) {
+export function AmbientVideo({ src, poster, className }: AmbientVideoProps) {
   const { mediaContainerRef, mediaAllowed, mediaSourceAllowed } = useMediaPlayback<HTMLDivElement>()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [failedSrc, setFailedSrc] = useState<string | null>(null)
   const videoSrc = mediaSourceAllowed && failedSrc !== src ? src : undefined
+
+  useEffect(() => {
+    const video = videoRef.current
+    return () => {
+      if (!video) return
+      video.pause()
+      video.removeAttribute('src')
+      video.load()
+    }
+  }, [src])
 
   useEffect(() => {
     const video = videoRef.current
@@ -34,40 +45,39 @@ export function AmbientVideo({ src, className }: AmbientVideoProps) {
       return
     }
 
-    void video.play().catch(() => {
-      // Browser autoplay policy or an unsupported codec leaves the dark fallback.
+    let cancelled = false
+    void video.play().catch((error: unknown) => {
+      const name = error && typeof error === 'object' && 'name' in error ? error.name : ''
+      if (!cancelled && name !== 'AbortError') {
+        setFailedSrc(videoSrc)
+      }
     })
     return () => {
+      cancelled = true
       video.pause()
     }
   }, [videoSrc, mediaAllowed])
 
   return (
     <div ref={mediaContainerRef} aria-hidden="true" className="absolute inset-0">
-      {failedSrc !== src ? (
-        <video
-          key={src}
-          ref={videoRef}
-          src={videoSrc}
-          muted
-          loop
-          playsInline
-          preload="none"
-          tabIndex={-1}
-          disablePictureInPicture
-          onCanPlay={(event) => {
-            if (mediaAllowed && videoSrc && event.currentTarget.getAttribute('src') === videoSrc) {
-              void event.currentTarget.play().catch(() => undefined)
-            }
-          }}
-          onError={(event) => {
-            if (videoSrc && event.currentTarget.getAttribute('src') === videoSrc) {
-              setFailedSrc(videoSrc)
-            }
-          }}
-          className={cn('h-full w-full object-cover', className)}
-        />
-      ) : null}
+      <video
+        key={src}
+        ref={videoRef}
+        src={videoSrc}
+        poster={poster}
+        muted
+        loop
+        playsInline
+        preload="none"
+        tabIndex={-1}
+        disablePictureInPicture
+        onError={(event) => {
+          if (videoSrc && event.currentTarget.getAttribute('src') === videoSrc) {
+            setFailedSrc(videoSrc)
+          }
+        }}
+        className={cn('h-full w-full object-cover', className)}
+      />
     </div>
   )
 }

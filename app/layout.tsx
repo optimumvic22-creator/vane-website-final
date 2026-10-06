@@ -11,11 +11,6 @@ const instrumentSans = localFont({
       weight: '400 700',
       style: 'normal',
     },
-    {
-      path: './fonts/InstrumentSans-Italic-Variable.woff2',
-      weight: '400 700',
-      style: 'italic',
-    },
   ],
   variable: '--font-body-runtime',
   display: 'swap',

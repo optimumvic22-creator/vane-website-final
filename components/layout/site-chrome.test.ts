@@ -1,5 +1,6 @@
-import { createElement, type ReactNode } from 'react'
-import { renderToStaticMarkup } from 'react-dom/server'
+import { PassThrough } from 'node:stream'
+import { createElement, type ComponentType, type ReactNode } from 'react'
+import { renderToPipeableStream, renderToStaticMarkup } from 'react-dom/server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const state = vi.hoisted(() => ({
@@ -7,10 +8,38 @@ const state = vi.hoisted(() => ({
   locale: 'en' as 'en' | 'de',
   gateState: 'open' as 'pending' | 'open' | 'dismissed',
   setLocale: vi.fn(),
+  dismissGate: vi.fn(),
   provider: vi.fn(),
+  loadBoundary: vi.fn(),
+  captureEffects: false,
+  effects: [] as Array<() => void | (() => void)>,
 }))
 
+vi.mock('react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react')>()
+  return {
+    ...actual,
+    useEffect: (effect: () => void | (() => void), dependencies?: unknown[]) => {
+      if (state.captureEffects) {
+        state.effects.push(effect)
+      } else {
+        actual.useEffect(effect, dependencies)
+      }
+    },
+  }
+})
+
 vi.mock('next/navigation', () => ({ usePathname: () => state.pathname }))
+// Model the async import boundary, rather than eagerly replacing every import.
+vi.mock('next/dynamic', async () => {
+  const { lazy } = await import('react')
+  return {
+    default: (load: () => Promise<ComponentType>) => lazy(async () => {
+      state.loadBoundary()
+      return { default: await load() }
+    }),
+  }
+})
 vi.mock('framer-motion', () => ({
   MotionConfig: ({ children }: { children: ReactNode }) => children,
 }))
@@ -27,10 +56,12 @@ vi.mock('@/lib/locale', () => ({
     locale: state.locale,
     setLocale: state.setLocale,
     gateState: state.gateState,
+    dismissGate: state.dismissGate,
   }),
 }))
 vi.mock('./SiteHeader', () => ({
-  SiteHeader: () => createElement('header', { 'data-testid': 'site-header' }, 'Header'),
+  SiteHeader: () => createElement('header', { 'data-testid': 'site-header' },
+    createElement('button', { type: 'button', 'aria-label': 'Language' }, 'EN / DE')),
 }))
 vi.mock('./SiteFooter', () => ({
   SiteFooter: () => createElement('footer', { 'data-testid': 'site-footer' }, 'Footer'),
@@ -49,31 +80,51 @@ beforeEach(() => {
   state.pathname = '/for/coach'
   state.locale = 'en'
   state.gateState = 'open'
+  state.captureEffects = false
+  state.effects = []
   vi.clearAllMocks()
 })
 
-function renderChrome(initialLocale: 'en' | 'de' = 'en', hasLocalePreference = false) {
+function renderChrome(initialLocale: 'en' | 'de' = 'en', hasLocalePreference = false): Promise<string> {
   const props = {
     initialLocale,
     hasLocalePreference,
     children: createElement('section', { 'data-testid': 'page-content' }, 'Page content'),
   }
-  return renderToStaticMarkup(createElement(SiteChrome, props))
+  return new Promise((resolve, reject) => {
+    const output = new PassThrough()
+    let html = ''
+    output.on('data', (chunk: Buffer) => { html += chunk.toString() })
+    output.on('end', () => resolve(html))
+    output.on('error', reject)
+    const { pipe } = renderToPipeableStream(createElement(SiteChrome, props), {
+      onAllReady() { pipe(output) },
+      onError: reject,
+    })
+  })
 }
 
 describe('public page chrome and dialog sequencing', () => {
+  it('does not load public chrome modules for an initial entry request', async () => {
+    state.pathname = '/'
+    const html = await renderChrome()
+
+    expect(state.loadBoundary).not.toHaveBeenCalled()
+    expect(html).toContain('data-testid="page-content"')
+  })
+
   it.each([
     ['en', false],
     ['en', true],
     ['de', true],
-  ] as const)('passes server locale %s and preference %s into the locale provider', (locale, hasPreference) => {
-    renderChrome(locale, hasPreference)
+  ] as const)('passes server locale %s and preference %s into the locale provider', async (locale, hasPreference) => {
+    await renderChrome(locale, hasPreference)
 
     expect(state.provider).toHaveBeenCalledWith(locale, hasPreference)
   })
 
-  it('shows only the language gate and makes the actual page background inert', () => {
-    const html = renderChrome()
+  it('shows only the language gate and makes the actual page background inert', async () => {
+    const html = await renderChrome()
 
     expect(html).toContain('<div inert="">')
     expect(html).toMatch(/<div inert="">[\s\S]*data-testid="site-header"[\s\S]*id="main-content"[\s\S]*data-testid="page-content"[\s\S]*data-testid="site-footer"/)
@@ -81,9 +132,34 @@ describe('public page chrome and dialog sequencing', () => {
     expect(html).not.toContain('data-testid="cookie-banner"')
   })
 
-  it('shows consent after the language gate is dismissed and releases the background', () => {
+  it('keeps the partner page and header language control available, then dismisses its first-visit gate', async () => {
+    state.pathname = '/for/partner'
+    state.captureEffects = true
+    const html = await renderChrome()
+
+    expect(html).toContain('data-testid="page-content"')
+    expect(html).toContain('aria-label="Language"')
+    expect(html).not.toContain('data-testid="language-gate"')
+    expect(html).not.toMatch(/\sinert(?:=|\s|>)/)
+    expect(state.dismissGate).not.toHaveBeenCalled()
+
+    state.effects.forEach((effect) => effect())
+    expect(state.dismissGate).toHaveBeenCalledOnce()
+  })
+
+  it('does not auto-dismiss the language gate on an athlete page', async () => {
+    state.pathname = '/for/athlete'
+    state.captureEffects = true
+    const html = await renderChrome()
+
+    state.effects.forEach((effect) => effect())
+    expect(html).toContain('data-testid="language-gate"')
+    expect(state.dismissGate).not.toHaveBeenCalled()
+  })
+
+  it('shows consent after the language gate is dismissed and releases the background', async () => {
     state.gateState = 'dismissed'
-    const html = renderChrome()
+    const html = await renderChrome()
 
     expect(html).toContain('data-testid="cookie-banner"')
     expect(html).not.toContain('data-testid="language-gate"')
@@ -91,9 +167,9 @@ describe('public page chrome and dialog sequencing', () => {
     expect(html).toContain('id="main-content" tabindex="-1"')
   })
 
-  it('does not show either dialog while the saved language is being resolved', () => {
+  it('does not show either dialog while the saved language is being resolved', async () => {
     state.gateState = 'pending'
-    const html = renderChrome()
+    const html = await renderChrome()
 
     expect(html).not.toContain('data-testid="language-gate"')
     expect(html).not.toContain('data-testid="cookie-banner"')
@@ -102,10 +178,10 @@ describe('public page chrome and dialog sequencing', () => {
 
   it.each(['pending', 'open', 'dismissed'] as const)(
     'keeps the root role selection free of the language gate in the %s state',
-    (gateState) => {
+    async (gateState) => {
       state.pathname = '/'
       state.gateState = gateState
-      const html = renderChrome()
+      const html = await renderChrome()
 
       expect(html).toContain('id="main-content"')
       expect(html).toContain('data-testid="page-content"')
@@ -117,9 +193,9 @@ describe('public page chrome and dialog sequencing', () => {
     },
   )
 
-  it.each(['/studio', '/studio/structure'])('bypasses public chrome for %s', (pathname) => {
+  it.each(['/studio', '/studio/structure'])('bypasses public chrome for %s', async (pathname) => {
     state.pathname = pathname
-    const html = renderChrome()
+    const html = await renderChrome()
 
     expect(html).toBe('<section data-testid="page-content">Page content</section>')
     expect(state.provider).not.toHaveBeenCalled()

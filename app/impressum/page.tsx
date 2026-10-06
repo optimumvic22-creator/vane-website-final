@@ -23,9 +23,10 @@ export default function ImpressumPage() {
 
         <div className="space-y-8">
           <div>
-            <h2 className={sectionHeadingClass}>Angaben gemäß § 5 ECG</h2>
+            <h2 className={sectionHeadingClass}>Unternehmensangaben gemäß § 5 ECG und § 14 UGB</h2>
             <Body className="mt-2">
               VANE Science GmbH<br />
+              Sitz: Wien<br />
               Linke Wienzeile 64/GL II<br />
               1060 Wien<br />
               Österreich
@@ -53,13 +54,6 @@ export default function ImpressumPage() {
             <Body className="mt-2">
               Firmenbuchgericht: Handelsgericht Wien<br />
               Firmenbuchnummer: FN 685936f
-            </Body>
-          </div>
-
-          <div>
-            <h2 className={sectionHeadingClass}>Umsatzsteuer</h2>
-            <Body className="mt-2">
-              Umsatzsteuer-Identifikationsnummer (UID): wird nachgereicht.
             </Body>
           </div>
 

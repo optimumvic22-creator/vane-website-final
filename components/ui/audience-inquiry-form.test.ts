@@ -92,4 +92,56 @@ describe('assessment inquiry interaction', () => {
     expect(fields.every((field) => field.props.readOnly === true)).toBe(true)
     expect(elements.find((element) => element.props.type === 'submit')?.props.disabled).toBe(true)
   })
+
+  it('reuses its key on retry and allocates a new key when the form payload changes', async () => {
+    const NativeFormData = globalThis.FormData
+    const data = new NativeFormData()
+    data.set('context', 'Basketball')
+    data.set('email', 'test@example.com')
+    vi.stubGlobal('FormData', vi.fn(function () { return data }))
+    state.submit.mockRejectedValueOnce(new Error('response lost'))
+      .mockRejectedValueOnce(new Error('response lost'))
+      .mockRejectedValueOnce(new Error('response lost'))
+      .mockResolvedValueOnce(undefined)
+    try {
+      const node = form()
+      const event = { preventDefault: vi.fn(), currentTarget: {} }
+      await node.props.onSubmit(event)
+      await node.props.onSubmit(event)
+      data.set('context', 'Football')
+      await node.props.onSubmit(event)
+      data.set('context', 'Basketball')
+      await node.props.onSubmit(event)
+
+      const [first, retry, edited, restored] = state.submit.mock.calls.map(([payload]) => payload)
+      expect(first.idempotencyKey).toMatch(/^[a-f0-9-]{36}$/)
+      expect(retry.idempotencyKey).toBe(first.idempotencyKey)
+      expect(edited.idempotencyKey).not.toBe(first.idempotencyKey)
+      expect(edited.context).toBe('Football')
+      expect(restored.idempotencyKey).toBe(first.idempotencyKey)
+    } finally {
+      vi.unstubAllGlobals()
+    }
+  })
+
+  it('uses cryptographically generated UUID v4 when randomUUID is unavailable', async () => {
+    const NativeFormData = globalThis.FormData
+    const data = new NativeFormData()
+    data.set('context', 'Basketball')
+    data.set('email', 'test@example.com')
+    vi.stubGlobal('FormData', vi.fn(function () { return data }))
+    const getRandomValues = vi.fn((bytes: Uint8Array) => {
+      bytes.forEach((_, index) => { bytes[index] = index })
+      return bytes
+    })
+    vi.stubGlobal('crypto', { getRandomValues })
+    try {
+      const node = form()
+      await node.props.onSubmit({ preventDefault: vi.fn(), currentTarget: {} })
+      expect(getRandomValues).toHaveBeenCalledOnce()
+      expect(state.submit.mock.calls[0][0].idempotencyKey).toBe('00010203-0405-4607-8809-0a0b0c0d0e0f')
+    } finally {
+      vi.unstubAllGlobals()
+    }
+  })
 })

@@ -7,6 +7,7 @@ const state = vi.hoisted(() => ({
   sourceAllowed: true,
   motionPaused: false,
   systemReducedMotion: false,
+  adjusting: false,
   hookIndex: 0,
   effects: [] as Array<() => void | (() => void)>,
   failedSources: new Set<string>(),
@@ -19,7 +20,7 @@ vi.mock('react', () => ({
   useRef: (initial: unknown) => ({ current: initial }),
   useState: (initial: unknown) => {
     const index = state.hookIndex++
-    return [index === 2 ? state.mediaCode : index === 4 ? state.failedSources : initial, vi.fn()]
+    return [index === 2 ? state.mediaCode : index === 4 ? state.failedSources : index === 5 ? state.adjusting : initial, vi.fn()]
   },
 }))
 vi.mock('framer-motion', () => ({
@@ -62,6 +63,7 @@ beforeEach(() => {
   state.sourceAllowed = true
   state.motionPaused = false
   state.systemReducedMotion = false
+  state.adjusting = false
   state.failedSources = new Set()
 })
 
@@ -114,6 +116,20 @@ describe('MQS media initialization and motion', () => {
   it('keeps radar transitions when motion is allowed', () => {
     const shapes = render().filter((element) => String(element.type).startsWith('motion.'))
     expect(shapes.every((element) => (element.props.transition as { duration: number }).duration === 0.28)).toBe(true)
+  })
+
+  it('updates radar immediately during pointer or keyboard adjustment', () => {
+    state.adjusting = true
+    const shapes = render().filter((element) => String(element.type).startsWith('motion.'))
+    expect(shapes).toHaveLength(8)
+    expect(shapes.every((element) => (element.props.transition as { duration: number }).duration === 0)).toBe(true)
+    const ranges = render().filter((element) => element.props.type === 'range')
+    expect(ranges).toHaveLength(8)
+    for (const range of ranges) {
+      expect(range.props.onPointerCancel).toBeTypeOf('function')
+      expect(range.props.onLostPointerCapture).toBeTypeOf('function')
+      expect(range.props.onKeyUp).toBeTypeOf('function')
+    }
   })
 
   it('also removes animation delays from standalone MQS when paused', () => {

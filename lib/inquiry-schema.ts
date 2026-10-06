@@ -7,6 +7,9 @@ export const inquirySchema = z.object({
   message: z.string().trim().max(600).optional(),
   locale: z.enum(['en', 'de']).optional(),
   source: z.string().max(120).optional(),
+  // A browser-generated UUID identifies one submission across uncertain retries.
+  // Older clients can omit it and retain the original create behavior.
+  idempotencyKey: z.uuidv4().optional(),
   // Honeypot. This field is visually hidden and must stay empty.
   company: z.string().optional(),
 }).refine((input) => input.audience === 'athlete' || (input.message?.length ?? 0) >= 2, {

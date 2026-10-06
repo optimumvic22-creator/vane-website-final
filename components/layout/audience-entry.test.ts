@@ -53,7 +53,7 @@ function createVideoLifecycle(audience: 'athlete' | 'coach' | 'partner') {
     video,
     activatedVideosRef,
     attachSource() { video.src = src },
-    render(mediaAllowed: boolean, activeAudience: string | null = audience) {
+    render(mediaAllowed: boolean, activeAudience: string | null = audience, mediaSourceAllowed = mediaAllowed) {
       cleanup?.()
       cleanup = runInNewContext(effectCode, {
         athleteVideoRef: { current: audience === 'athlete' ? video : null },
@@ -65,6 +65,7 @@ function createVideoLifecycle(audience: 'athlete' | 'coach' | 'partner') {
         loadedAudiences: new Set([audience]),
         failedAudiences: new Set(),
         mediaAllowed,
+        mediaSourceAllowed,
         activeAudience,
         reduceMotion: false,
         activatedVideosRef,
@@ -124,6 +125,19 @@ describe('entry video source lifecycle', () => {
     expect(activatedVideosRef.current.has(audience)).toBe(true)
     vi.advanceTimersByTime(300)
     expect(video.currentTime).toBe(restTime + 1)
+    lifecycle.dispose()
+  })
+
+  it.each(audiences)('pauses %s without resetting it during a brief viewport exit', (audience, restTime) => {
+    const lifecycle = createVideoLifecycle(audience)
+    lifecycle.render(true)
+    lifecycle.video.currentTime = restTime + 1
+    lifecycle.render(false, null, true)
+    expect(lifecycle.video.pause).toHaveBeenCalledOnce()
+    expect(lifecycle.video.removeAttribute).not.toHaveBeenCalled()
+    expect(lifecycle.video.load).not.toHaveBeenCalled()
+    lifecycle.render(true)
+    expect(lifecycle.video.currentTime).toBe(restTime + 1)
     lifecycle.dispose()
   })
 })

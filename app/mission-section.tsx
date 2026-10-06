@@ -6,6 +6,7 @@ import { sectionReveal } from '@/lib/motion'
 import { useLocale } from '@/lib/locale'
 import { renderText } from '@/lib/render-text'
 import { FOUNDERS } from '@/lib/founders'
+import './legacy-sections.css'
 
 type UseCase = {
   tag: string

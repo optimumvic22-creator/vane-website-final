@@ -243,6 +243,7 @@ export function MqsDashboard({
   const [failedDomainSources, setFailedDomainSources] = useState<ReadonlySet<string>>(
     () => new Set(),
   )
+  const [isAdjusting, setIsAdjusting] = useState(false)
   const { mediaContainerRef, mediaAllowed, mediaSourceAllowed } = useMediaPlayback<HTMLDivElement>()
   const domainVideoRef = useRef<HTMLVideoElement | null>(null)
   const overallAnchorRef = useRef<DomainData[]>(interactiveSeed)
@@ -315,6 +316,100 @@ export function MqsDashboard({
         ? `Illustrative profile, Movement Quality T score ${activeScore}, baseline ${DEFAULT_BASELINE}, retest ${DEFAULT_OVERALL}, change plus ${DEFAULT_RETEST_DELTA}`
         : `Illustrative profile, Movement Quality T score ${activeScore}`
 
+  // Reuse the media subtree while score-only state changes. Native playback and
+  // video event handlers no longer reconcile for every slider step.
+  const domainMediaPanel = useMemo(() => (
+    <div className="order-2 flex aspect-square min-w-0 items-center justify-center">
+      <div
+        ref={mediaContainerRef}
+        className="relative aspect-square w-full overflow-hidden rounded-[4px] border border-white/[0.11] bg-[#030506]"
+        aria-label={
+          locale === 'de'
+            ? 'Bewegungsvideo der aktiven Domäne'
+            : 'Movement video for the active domain'
+        }
+        style={{
+          backgroundImage: activeDomainMedia ? `linear-gradient(rgba(0,0,0,0.18),rgba(0,0,0,0.18)),url(${activeDomainMedia.src.replace('-web.mp4', '-poster.jpg')})` : undefined,
+          backgroundSize: 'cover',
+          backgroundPosition: activeDomainMedia?.objectPosition,
+        }}
+      >
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 opacity-45"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(129,216,207,0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(129,216,207,0.055) 1px, transparent 1px), radial-gradient(circle at 52% 46%, rgba(129,216,207,0.13), transparent 48%)',
+            backgroundSize: '14px 14px, 14px 14px, 100% 100%',
+          }}
+        />
+        {activeDomainMedia && !failedDomainSources.has(activeDomainMedia.src) && (
+          <video
+            key={activeDomainMedia.src}
+            ref={domainVideoRef}
+            src={domainVideoSrc}
+            poster={activeDomainMedia.src.replace('-web.mp4', '-poster.jpg')}
+            muted
+            loop
+            playsInline
+            preload="none"
+            disablePictureInPicture
+            onLoadStart={() => setReadyDomainSrc(null)}
+            onEmptied={() => setReadyDomainSrc(null)}
+            onLoadedData={(event) => {
+              if (domainVideoSrc && event.currentTarget.getAttribute('src') === domainVideoSrc) {
+                setReadyDomainSrc(domainVideoSrc)
+              }
+            }}
+            onCanPlay={(event) => {
+              if (domainVideoSrc && event.currentTarget.getAttribute('src') === domainVideoSrc) {
+                setReadyDomainSrc(domainVideoSrc)
+                if (mediaAllowed) void event.currentTarget.play().catch(() => undefined)
+              }
+            }}
+            onError={(event) => {
+              if (domainVideoSrc && event.currentTarget.getAttribute('src') === domainVideoSrc) {
+                setFailedDomainSources((current) => new Set(current).add(domainVideoSrc))
+              }
+            }}
+            className={`absolute inset-0 h-full w-full object-cover brightness-[0.82] contrast-[1.08] saturate-[0.82] transition-opacity duration-200 motion-reduce:transition-none ${
+              domainVideoSrc && readyDomainSrc === domainVideoSrc
+                ? 'opacity-100'
+                : 'opacity-0'
+            }`}
+            style={{ objectPosition: activeDomainMedia.objectPosition }}
+            aria-hidden="true"
+          />
+        )}
+        <div
+          aria-hidden="true"
+          className={`absolute inset-0 bg-[linear-gradient(180deg,transparent_45%,rgba(0,0,0,0.62)_100%)] transition-opacity duration-200 ${
+            activeDomainMedia ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+        <div
+          className={`absolute inset-x-1.5 bottom-1.5 flex items-center gap-1 font-sans text-[10px] font-semibold uppercase leading-[1.2] tracking-[0.04em] text-white/90 transition-opacity duration-200 ${
+            activeDomainMedia ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <span
+            aria-hidden="true"
+            className="h-1.5 w-1.5 shrink-0"
+            style={{
+              backgroundColor: activeMediaDomainCode
+                ? DOMAIN_COLORS[activeMediaDomainCode]
+                : 'var(--mqs-value-inv)',
+              clipPath:
+                'polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%)',
+            }}
+          />
+          {DOMAIN_LABELS[locale][activeMediaDomainCode ?? 'POWER']}
+        </div>
+      </div>
+    </div>
+  ), [activeDomainMedia, activeMediaDomainCode, domainVideoSrc, failedDomainSources,
+    locale, mediaAllowed, mediaContainerRef, readyDomainSrc])
+
   if (variant === 'audience') {
     const setOverallScore = (score: number) => {
       setInteractiveDomains(
@@ -359,94 +454,7 @@ export function MqsDashboard({
         </div>
 
         <div className="relative mx-auto mt-4 grid w-full grid-cols-3 items-center gap-[var(--mqs-core-gap)] px-[var(--mqs-core-gap)] [--mqs-core-gap:clamp(6px,2.2vw,14px)]">
-          <div className="order-2 flex aspect-square min-w-0 items-center justify-center">
-            <div
-              ref={mediaContainerRef}
-              className="relative aspect-square w-full overflow-hidden rounded-[4px] border border-white/[0.11] bg-[#030506]"
-              aria-label={
-                locale === 'de'
-                  ? 'Bewegungsvideo der aktiven Domäne'
-                  : 'Movement video for the active domain'
-              }
-              style={{
-                backgroundImage: activeDomainMedia ? `linear-gradient(rgba(0,0,0,0.18),rgba(0,0,0,0.18)),url(${activeDomainMedia.src.replace('-web.mp4', '-poster.jpg')})` : undefined,
-                backgroundSize: 'cover',
-                backgroundPosition: activeDomainMedia?.objectPosition,
-              }}
-            >
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 opacity-45"
-                style={{
-                  backgroundImage:
-                    'linear-gradient(rgba(129,216,207,0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(129,216,207,0.055) 1px, transparent 1px), radial-gradient(circle at 52% 46%, rgba(129,216,207,0.13), transparent 48%)',
-                  backgroundSize: '14px 14px, 14px 14px, 100% 100%',
-                }}
-              />
-              {activeDomainMedia && !failedDomainSources.has(activeDomainMedia.src) && (
-                <video
-                  key={activeDomainMedia.src}
-                  ref={domainVideoRef}
-                  src={domainVideoSrc}
-                  poster={activeDomainMedia.src.replace('-web.mp4', '-poster.jpg')}
-                  muted
-                  loop
-                  playsInline
-                  preload="none"
-                  disablePictureInPicture
-                  onLoadStart={() => setReadyDomainSrc(null)}
-                  onEmptied={() => setReadyDomainSrc(null)}
-                  onLoadedData={(event) => {
-                    if (domainVideoSrc && event.currentTarget.getAttribute('src') === domainVideoSrc) {
-                      setReadyDomainSrc(domainVideoSrc)
-                    }
-                  }}
-                  onCanPlay={(event) => {
-                    if (domainVideoSrc && event.currentTarget.getAttribute('src') === domainVideoSrc) {
-                      setReadyDomainSrc(domainVideoSrc)
-                      if (mediaAllowed) void event.currentTarget.play().catch(() => undefined)
-                    }
-                  }}
-                  onError={(event) => {
-                    if (domainVideoSrc && event.currentTarget.getAttribute('src') === domainVideoSrc) {
-                      setFailedDomainSources((current) => new Set(current).add(domainVideoSrc))
-                    }
-                  }}
-                  className={`absolute inset-0 h-full w-full object-cover brightness-[0.82] contrast-[1.08] saturate-[0.82] transition-opacity duration-200 motion-reduce:transition-none ${
-                    domainVideoSrc && readyDomainSrc === domainVideoSrc
-                      ? 'opacity-100'
-                      : 'opacity-0'
-                  }`}
-                  style={{ objectPosition: activeDomainMedia.objectPosition }}
-                  aria-hidden="true"
-                />
-              )}
-              <div
-                aria-hidden="true"
-                className={`absolute inset-0 bg-[linear-gradient(180deg,transparent_45%,rgba(0,0,0,0.62)_100%)] transition-opacity duration-200 ${
-                  activeDomainMedia ? 'opacity-100' : 'opacity-0'
-                }`}
-              />
-              <div
-                className={`absolute inset-x-1.5 bottom-1.5 flex items-center gap-1 font-sans text-[10px] font-semibold uppercase leading-[1.2] tracking-[0.04em] text-white/90 transition-opacity duration-200 ${
-                  activeDomainMedia ? 'opacity-100' : 'opacity-0'
-                }`}
-              >
-                <span
-                  aria-hidden="true"
-                  className="h-1.5 w-1.5 shrink-0"
-                  style={{
-                    backgroundColor: activeMediaDomainCode
-                      ? DOMAIN_COLORS[activeMediaDomainCode]
-                      : 'var(--mqs-value-inv)',
-                    clipPath:
-                      'polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%)',
-                  }}
-                />
-                {DOMAIN_LABELS[locale][activeMediaDomainCode ?? 'POWER']}
-              </div>
-            </div>
-          </div>
+          {domainMediaPanel}
 
           <div className="order-1 flex aspect-square min-w-0 items-center justify-center">
             <div
@@ -522,7 +530,7 @@ export function MqsDashboard({
               <motion.polygon
                 animate={{ points: radarPolygon }}
                 transition={{
-                  duration: reduceMotion ? 0 : 0.28,
+                  duration: reduceMotion || isAdjusting ? 0 : 0.28,
                   ease: [0.16, 1, 0.3, 1],
                 }}
                 fill="url(#mqs-profile-fill)"
@@ -545,7 +553,7 @@ export function MqsDashboard({
                       r: isActive ? 3.1 : 2.15,
                     }}
                     transition={{
-                      duration: reduceMotion ? 0 : 0.28,
+                      duration: reduceMotion || isAdjusting ? 0 : 0.28,
                       ease: [0.16, 1, 0.3, 1],
                     }}
                     fill={domainColor}
@@ -598,15 +606,21 @@ export function MqsDashboard({
           <input
             id="mqs-overall"
             type="range"
+            onPointerCancel={() => setIsAdjusting(false)}
+            onLostPointerCapture={() => setIsAdjusting(false)}
+            onKeyDown={() => setIsAdjusting(true)}
+            onKeyUp={() => setIsAdjusting(false)}
             min={MQS_SCORE_MIN}
             max={MQS_SCORE_MAX}
             step="1"
             value={roundedInteractiveScore}
             onPointerDown={() => {
+              setIsAdjusting(true)
               overallAnchorRef.current = interactiveDomains
               setActiveDomainCode(null)
             }}
             onPointerUp={() => {
+              setIsAdjusting(false)
               overallAnchorRef.current = interactiveDomains
             }}
             onFocus={() => {
@@ -614,6 +628,7 @@ export function MqsDashboard({
               setActiveDomainCode(null)
             }}
             onBlur={() => {
+              setIsAdjusting(false)
               overallAnchorRef.current = interactiveDomains
             }}
             onChange={(event) => setOverallScore(Number(event.target.value))}
@@ -684,16 +699,22 @@ export function MqsDashboard({
                 <input
                   id={sliderId}
                   type="range"
+            onPointerCancel={() => setIsAdjusting(false)}
+            onLostPointerCapture={() => setIsAdjusting(false)}
+            onKeyDown={() => setIsAdjusting(true)}
+            onKeyUp={() => setIsAdjusting(false)}
                   min={MQS_SCORE_MIN}
                   max={MQS_SCORE_MAX}
                   step="1"
                   value={domain.score}
                   onPointerDown={() => {
+              setIsAdjusting(true)
                     setActiveDomainCode(domainCode)
                     setActiveMediaDomainCode(domainCode)
                   }}
                   onFocus={() => setActiveDomainCode(domainCode)}
-                  onBlur={() => setActiveDomainCode(null)}
+                  onPointerUp={() => setIsAdjusting(false)}
+                  onBlur={() => { setActiveDomainCode(null); setIsAdjusting(false) }}
                   onChange={(event) => {
                     setActiveMediaDomainCode(domainCode)
                     setInteractiveDomainScore(

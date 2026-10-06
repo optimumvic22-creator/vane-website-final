@@ -6,6 +6,10 @@ const projectRoot = fileURLToPath(new URL('.', import.meta.url))
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  allowedDevOrigins: [
+    '127.0.0.1',
+    ...(process.env.VANE_MOBILE_PREVIEW_HOST ? [process.env.VANE_MOBILE_PREVIEW_HOST] : []),
+  ],
 
   images: {
     formats: ['image/webp'],

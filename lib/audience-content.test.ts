@@ -6,6 +6,7 @@ import { WAITLIST_UPDATES_CONSENT_VERSION, waitlistUpdatesConsent } from './wait
 // Captured from the current source before the approved September 24 copy edits.
 // Approved review exceptions: athlete DE benefits, partner benefits titles,
 // and the athlete/partner science headings from the September 25 CEO review.
+// Partner hero wording follows the approved October 5 partner landing-page brief.
 const lockedCopyBefore = {
   "athlete": {
     "en": {
@@ -45,8 +46,8 @@ const lockedCopyBefore = {
   },
   "partner": {
     "en": {
-      "headline": "ADD A MOVEMENT QUALITY STANDARD TO WHAT YOU ALREADY DO WELL.",
-      "intro": "VANE adds a standardized movement quality assessment and reporting layer to the services, programs, or products you already provide. We start with your existing setup and define a focused pilot around one clear use case.",
+      "headline": "Add a movement quality standard to what you already do well.",
+      "intro": "We bring MQS into your facility and work closely with your team until it's part of how you work, at the highest level. Your data helps shape the global standard for movement quality.",
       "benefitsTitle": "How MQS fits your existing offer",
       "outputTitle": "A model built around your context.",
       "scienceTitle": "Evidence before expansion.",
@@ -54,7 +55,7 @@ const lockedCopyBefore = {
     },
     "de": {
       "headline": "ERGÄNZE DEIN ANGEBOT UM EINEN STANDARD FÜR BEWEGUNGS­QUALITÄT.",
-      "intro": "VANE ergänzt deine bestehenden Angebote, Programme oder Produkte um ein standardisiertes Assessment und Reporting für Bewegungsqualität. Wir beginnen mit deinem bestehenden Ablauf und definieren einen fokussierten Pilot für einen klaren Anwendungsfall.",
+      "intro": "Wir bringen MQS in deine Einrichtung und arbeiten eng mit deinem Team zusammen, bis es auf höchstem Niveau zu eurem Arbeitsalltag gehört. Eure Daten helfen, den globalen Standard für Bewegungsqualität mitzugestalten.",
       "benefitsTitle": "So ergänzt MQS dein bestehendes Angebot",
       "outputTitle": "Ein Modell rund um deinen Kontext.",
       "scienceTitle": "Erst prüfen. Dann erweitern."
@@ -77,15 +78,18 @@ describe('approved audience copy contract', () => {
     expect(publicCopy).not.toMatch(/MQS Vault|Pilotieren|[\u2013\u2014]/)
   })
 
-  it.each(['coach', 'partner'] as const)('keeps %s access distinct from the available athlete assessment', (audience) => {
-    const { en, de } = audienceContent[audience]
-    const expectedAudience = audience === 'coach' ? 'coaches and teams' : 'partners'
-    const expectedGermanAudience = audience === 'coach' ? 'Coaches und Teams' : 'Partner'
-
-    expect(en.availabilityNote).toBe(`MQS access for ${expectedAudience} is still in development.`)
-    expect(de.availabilityNote).toBe(`Der MQS Zugang für ${expectedGermanAudience} ist noch in Entwicklung.`)
+  it('keeps coach access in development and distinct from the available athlete assessment', () => {
+    const { en, de } = audienceContent.coach
+    expect(en.availabilityNote).toBe('MQS access for coaches and teams is still in development.')
+    expect(de.availabilityNote).toBe('Der MQS Zugang für Coaches und Teams ist noch in Entwicklung.')
     expect(en.finalText).toContain(en.availabilityNote)
     expect(de.finalText).toContain(de.availabilityNote)
+    expect(en.processEyebrow).toMatch(/planned|plan to/i)
+    expect(de.processEyebrow).toMatch(/geplant/i)
+  })
+
+  it.each(['coach', 'partner'] as const)('preserves %s waitlist CTAs and access boundaries', (audience) => {
+    const { en, de } = audienceContent[audience]
     expect(en.primaryCta).toBe('Join the waitlist')
     expect(en.finalCta).toBe('Join the waitlist')
     expect(de.primaryCta).toBe('Auf die Warteliste')
@@ -94,8 +98,57 @@ describe('approved audience copy contract', () => {
     expect(de.finalTitle).toBe('Auf die MQS Warteliste.')
     expect(en.finalNote).toBe('Joining the waitlist does not give you access or start a trial.')
     expect(de.finalNote).toBe('Der Wartelisteneintrag schaltet keinen Zugang frei und startet keine Testphase.')
-    expect(en.processEyebrow).toMatch(/planned|plan to/i)
-    expect(de.processEyebrow).toMatch(/geplant/i)
+  })
+
+  it('uses the approved partner facility and team support wording without development qualifiers', () => {
+    const { en, de } = audienceContent.partner
+    expect(en.availabilityNote).toBeUndefined()
+    expect(de.availabilityNote).toBeUndefined()
+    expect(JSON.stringify({ en, de })).not.toMatch(/still in development|noch in Entwicklung/)
+    expect(en.secondaryCta).toBe('Explore the partner model')
+    expect(de.secondaryCta).toBe('Partnermodell ansehen')
+    expect(en.heroValueRail).toEqual([
+      { title: 'Build on what you already do.', detail: 'MQS fits around your services and equipment.' },
+      { title: 'Get your team to expert level.', detail: 'We work alongside you from day one.' },
+      { title: 'Shape the standard.', detail: 'Partners help build the global movement-quality reference.' },
+    ])
+    expect(de.heroValueRail).toEqual([
+      { title: 'Baue auf dem auf, was du bereits tust.', detail: 'MQS ergänzt deine Angebote und deine Ausstattung.' },
+      { title: 'Bring dein Team auf Expertenniveau.', detail: 'Wir begleiten euch vom ersten Tag an.' },
+      { title: 'Gestalte den Standard mit.', detail: 'Partner bauen die globale Referenz für Bewegungsqualität mit auf.' },
+    ])
+    expect(en.benefits[0].description).toBe('A training facility uses the same movement assessment at the start of a program and at retest.')
+    expect(de.benefits[0].description).toBe('Ein Trainingszentrum nutzt zu Beginn eines Programms und beim Retest dasselbe Bewegungsassessment.')
+    expect(en.benefits[1].description).toContain('the MQS report')
+    expect(de.benefits[1].description).toContain('der MQS Bericht')
+    expect(en.processEyebrow).toBe('How we work together')
+    expect(de.processEyebrow).toBe('So arbeiten wir zusammen')
+    expect(en.steps[1].description).toContain('and we set MQS up with your team.')
+    expect(de.steps[1].description).toContain('richten MQS gemeinsam mit deinem Team ein.')
+  })
+
+  it('retains the four partner deliverables and adds participation in the standard', () => {
+    const { en, de } = audienceContent.partner
+    expect(en.outputEyebrow).toBe('What the partnership delivers')
+    expect(de.outputEyebrow).toBe('Was die Partnerschaft bietet')
+    expect(en.deliverables).toEqual([
+      'Defined use case and pilot scope',
+      'Assessment protocol and onboarding',
+      'Reports designed for your users',
+      'Review of results, limitations, and next steps',
+      'A seat at the table in building the movement-quality standard',
+    ])
+    expect(de.deliverables).toEqual([
+      'Ein konkreter Einsatz und ein vereinbarter Testumfang',
+      'Assessmentprotokoll und Einführung',
+      'Berichte für deine Nutzer',
+      'Prüfung von Ergebnissen, Grenzen und nächsten Schritten',
+      'Die Möglichkeit, den Standard für Bewegungsqualität mitzugestalten',
+    ])
+    expect(en.scienceText).toBe('We agree up front what success looks like and review the results together before scaling up.')
+    expect(de.scienceText).toBe('Wir legen vorab fest, woran wir Erfolg erkennen, und prüfen die Ergebnisse gemeinsam, bevor wir den Einsatz ausweiten.')
+    expect(en.finalText).toBe("Interested in bringing MQS into your facility? Join the waitlist and we'll be in touch.")
+    expect(de.finalText).toBe('Du möchtest MQS in deine Einrichtung bringen? Trag dich auf die Warteliste ein. Wir melden uns bei dir.')
   })
 
   it('preserves the athlete request as an available Vienna service, not a booking or update signup', () => {

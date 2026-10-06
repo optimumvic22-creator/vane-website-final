@@ -51,6 +51,18 @@ const fieldCopy = {
   },
 } as const
 
+function newInquiryKey() {
+  const webCrypto = globalThis.crypto
+  if (typeof webCrypto?.randomUUID === 'function') return webCrypto.randomUUID()
+  // getRandomValues remains available in browsers that do not expose
+  // randomUUID in an insecure local-device preview. Never use Math.random.
+  const bytes = webCrypto.getRandomValues(new Uint8Array(16))
+  bytes[6] = (bytes[6] & 0x0f) | 0x40
+  bytes[8] = (bytes[8] & 0x3f) | 0x80
+  const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('')
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
+}
+
 export function AudienceInquiryForm({
   audience,
   locale,
@@ -69,6 +81,7 @@ export function AudienceInquiryForm({
   const messageRef = useRef<HTMLTextAreaElement>(null)
   const successRef = useRef<HTMLDivElement>(null)
   const requestPending = useRef(false)
+  const submissionKeysRef = useRef(new Map<string, string>())
   const copy = fieldCopy[audience]
 
   useEffect(() => {
@@ -95,15 +108,22 @@ export function AudienceInquiryForm({
     setStatus('submitting')
 
     try {
-      await submitInquiry({
+      const submission = {
         audience,
         locale,
         source: `audience:${audience}:final`,
-        email: String(form.get('email') ?? ''),
+        email: String(form.get('email') ?? '').trim().toLowerCase(),
         context,
         message,
         company: String(form.get('company') ?? ''),
-      })
+      }
+      const fingerprint = JSON.stringify(submission)
+      let idempotencyKey = submissionKeysRef.current.get(fingerprint)
+      if (!idempotencyKey) {
+        idempotencyKey = newInquiryKey()
+        submissionKeysRef.current.set(fingerprint, idempotencyKey)
+      }
+      await submitInquiry({ ...submission, idempotencyKey })
 
     } catch (cause) {
       setStatus('error')

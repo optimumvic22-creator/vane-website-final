@@ -5,6 +5,7 @@ import { sectionReveal } from '@/lib/motion'
 import { useLocale } from '@/lib/locale'
 import { renderText } from '@/lib/render-text'
 import { MqsDashboard } from '@/components/ui/mqs-dashboard'
+import './legacy-sections.css'
 
 type Voice = {
   idx: string

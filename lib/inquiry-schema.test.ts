@@ -43,4 +43,11 @@ describe('parseInquiryInput', () => {
     expect(parseInquiryInput({ ...validInquiry, audience: 'investor' }).success).toBe(false)
     expect(parseInquiryInput({ ...validInquiry, message: 'x'.repeat(601) }).success).toBe(false)
   })
+
+  it('accepts only version 4 UUID idempotency keys while retaining legacy omission', () => {
+    expect(parseInquiryInput(validInquiry).success).toBe(true)
+    expect(parseInquiryInput({ ...validInquiry, idempotencyKey: 'a87a66d0-c331-45e7-bafb-9e2cb8155550' }).success).toBe(true)
+    expect(parseInquiryInput({ ...validInquiry, idempotencyKey: 'not-a-key' }).success).toBe(false)
+    expect(parseInquiryInput({ ...validInquiry, idempotencyKey: '00000000-0000-0000-0000-000000000000' }).success).toBe(false)
+  })
 })

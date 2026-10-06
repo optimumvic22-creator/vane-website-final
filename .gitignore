@@ -35,6 +35,7 @@ yarn-error.log*
 /.next*.pid
 /.current-dev*.log
 /.gh-auth*.log
+/.codex-dev*.log
 
 # local agent and planning artifacts
 /.agents/

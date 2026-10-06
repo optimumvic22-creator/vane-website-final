@@ -4,6 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 const state = vi.hoisted(() => ({
   view: 'header' as 'header' | 'loading' | 'inquiry' | 'waitlist',
   locale: 'en' as 'en' | 'de' | null,
+  pathname: '/for/coach',
+  scrolled: false,
   hookIndex: 0,
   effects: [] as Array<() => unknown>,
   setMobileOpen: vi.fn(),
@@ -18,6 +20,7 @@ vi.mock('react', async () => {
     useId: () => 'test-waitlist',
     useState: (initial: unknown) => {
       const index = state.hookIndex++
+      if (state.view === 'header' && index === 0) return [state.scrolled, vi.fn()]
       if (state.view === 'header' && index === 1) return [true, state.setMobileOpen]
       if ((state.view === 'inquiry' || state.view === 'waitlist') && index === 0) return ['success', vi.fn()]
       if (state.view === 'waitlist' && index === 2) return [true, vi.fn()]
@@ -29,7 +32,7 @@ vi.mock('@/lib/locale', () => ({
   useLocale: () => ({ locale: state.locale ?? 'en' }),
   useOptionalLocale: () => state.locale ? { locale: state.locale } : null,
 }))
-vi.mock('next/navigation', () => ({ usePathname: () => '/for/coach' }))
+vi.mock('next/navigation', () => ({ usePathname: () => state.pathname }))
 vi.mock('next/link', () => ({ default: 'a' }))
 vi.mock('next/image', () => ({ default: 'img' }))
 vi.mock('framer-motion', () => ({ motion: { nav: 'nav' } }))
@@ -59,6 +62,8 @@ beforeEach(() => {
   vi.clearAllMocks()
   state.view = 'header'
   state.locale = 'en'
+  state.pathname = '/for/coach'
+  state.scrolled = false
   state.hookIndex = 0
   state.effects = []
 })
@@ -82,11 +87,15 @@ function headerHarness({ href = '#results', insideMenu = true, onToggle = false,
   }
   let breakpoint: (event: { matches: boolean }) => void = () => undefined
   let keydown: (event: { key: string }) => void = () => undefined
+  let mediaQuery = ''
   vi.stubGlobal('window', {
-    matchMedia: () => ({
+    matchMedia: (query: string) => {
+      mediaQuery = query
+      return { matches: false,
       addEventListener: (_type: string, handler: typeof breakpoint) => { breakpoint = handler },
       removeEventListener: vi.fn(),
-    }),
+      }
+    },
   })
   vi.stubGlobal('document', {
     activeElement: active,
@@ -94,10 +103,22 @@ function headerHarness({ href = '#results', insideMenu = true, onToggle = false,
     removeEventListener: vi.fn(),
   })
   state.effects[0]()
-  return { breakpoint: (matches = true) => breakpoint({ matches }), keydown, link, logo, toggle }
+  return { breakpoint: (matches = true) => breakpoint({ matches }), keydown, link, logo, toggle, mediaQuery }
 }
 
 describe('mobile menu breakpoint focus', () => {
+  it('keeps the scrolled header and mobile panel opaque above page content', () => {
+    state.scrolled = true
+    const header = SiteHeader()
+    const panel = descendants(header).find((element) => element.props.id === 'mobile-nav')
+
+    expect(header.props.className).toContain('bg-background')
+    expect(header.props.className).not.toContain('bg-background/88')
+    expect(header.props.className).not.toContain('backdrop-blur')
+    expect(panel?.props.className).toContain('bg-background')
+    expect(panel?.props.className).not.toContain('bg-background/95')
+  })
+
   it('moves focus to the matching visible desktop link', () => {
     const ui = headerHarness()
     ui.breakpoint()
@@ -141,6 +162,55 @@ describe('mobile menu breakpoint focus', () => {
     ui.keydown({ key: 'Escape' })
     expect(state.setMobileOpen).toHaveBeenCalledWith(false)
     expect(ui.toggle.focus).toHaveBeenCalledOnce()
+  })
+
+  it('keeps the longer Partner navigation behind the mobile menu until 1280px', () => {
+    state.pathname = '/for/partner'
+    const header = SiteHeader()
+    const elements = descendants(header)
+    const desktopNav = elements.find((element) => element.props['aria-label'] === 'Main navigation')
+    const mobileButtonWrap = elements.find((element) =>
+      String(element.props.className).includes('xl:hidden') && element.props['aria-label'] === undefined &&
+      descendants(element).some((child) => child.props['aria-controls'] === 'mobile-nav'))
+    const links = (desktopNav?.props.children as Element[][])[0]
+
+    expect(links.map((element) => element.props.href)).toEqual([
+      '#mqs-setup', '#partner-support', '#data-partnership', '#results',
+    ])
+    expect(content(desktopNav)).toContain('How we work together')
+    expect(desktopNav?.props.className).toContain('xl:flex')
+    expect(mobileButtonWrap?.props.className).toContain('xl:hidden')
+    state.locale = 'de'
+    state.hookIndex = 0
+    state.effects = []
+    const germanNav = descendants(SiteHeader()).find((element) => element.props['aria-label'] === 'Hauptnavigation')
+    expect(content(germanNav)).toContain('Was wir mitbringen')
+    expect(content(germanNav)).toContain('Unsere Zusammenarbeit')
+    expect(content(germanNav)).toContain('Datenpartnerschaft')
+    expect(content(germanNav)).toContain('Ergebnisse')
+    state.locale = 'en'
+    state.hookIndex = 0
+    state.effects = []
+    expect(headerHarness().mediaQuery).toBe('(min-width: 1280px)')
+  })
+
+  it('observes the Partner sections named by the navigation links', () => {
+    state.pathname = '/for/partner'
+    const ids: string[] = []
+    vi.stubGlobal('document', {
+      getElementById: (id: string) => { ids.push(id); return { id } },
+    })
+    vi.stubGlobal('IntersectionObserver', class {
+      observe() { /* only the queried IDs matter here */ }
+      disconnect() { /* no browser observer is started */ }
+    })
+    SiteHeader()
+    state.effects[2]()
+    expect(ids).toEqual(['mqs-setup', 'partner-support', 'data-partnership', 'results'])
+  })
+
+  it('preserves the existing Coach desktop breakpoint', () => {
+    expect(headerHarness().mediaQuery).toBe('(min-width: 1024px)')
   })
 })
 

@@ -1,33 +1,46 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
+import dynamic from 'next/dynamic'
 import { useEffect, useRef } from 'react'
 import { MotionConfig } from 'framer-motion'
 import { LocaleProvider, useLocale, type Locale } from '@/lib/locale'
 import { setMotionPaused, useMotionPaused } from '@/lib/motion-preference'
-import { SiteHeader } from './SiteHeader'
-import { SiteFooter } from './SiteFooter'
 import { CookieBanner } from './CookieBanner'
 import { LanguageGate } from './LanguageGate'
+
+// Entry and Studio do not need the public-page header/footer. Retain SSR while
+// loading these modules only on routes that render them. The first-visit language
+// dialog stays eager so an inert page never has to wait for its controls to load.
+const SiteHeader = dynamic(() => import('./SiteHeader').then((module) => module.SiteHeader))
+const SiteFooter = dynamic(() => import('./SiteFooter').then((module) => module.SiteFooter))
 
 function SiteChromeInner({
   children,
   isAudienceEntry,
+  isPartnerPage,
 }: {
   children: React.ReactNode
   isAudienceEntry: boolean
+  isPartnerPage: boolean
 }) {
-  const { gateState } = useLocale()
+  const { gateState, dismissGate } = useLocale()
   const mainRef = useRef<HTMLElement>(null)
   const previousGateState = useRef(gateState)
-  const languageDialogOpen = !isAudienceEntry && gateState === 'open'
+  const languageDialogOpen = !isAudienceEntry && !isPartnerPage && gateState === 'open'
 
   useEffect(() => {
-    if (previousGateState.current === 'open' && gateState === 'dismissed') {
+    if (isPartnerPage && gateState === 'open') {
+      dismissGate()
+    }
+  }, [dismissGate, gateState, isPartnerPage])
+
+  useEffect(() => {
+    if (!isPartnerPage && previousGateState.current === 'open' && gateState === 'dismissed') {
       mainRef.current?.focus({ preventScroll: true })
     }
     previousGateState.current = gateState
-  }, [gateState])
+  }, [gateState, isPartnerPage])
 
   if (isAudienceEntry) {
     return (
@@ -77,7 +90,9 @@ export function SiteChrome({
   return (
     <MotionConfig reducedMotion={motionPaused ? 'always' : 'user'}>
       <LocaleProvider initialLocale={initialLocale} hasLocalePreference={hasLocalePreference}>
-        <SiteChromeInner isAudienceEntry={pathname === '/'}>{children}</SiteChromeInner>
+        <SiteChromeInner isAudienceEntry={pathname === '/'} isPartnerPage={pathname === '/for/partner'}>
+          {children}
+        </SiteChromeInner>
       </LocaleProvider>
     </MotionConfig>
   )

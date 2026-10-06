@@ -31,7 +31,7 @@ Wichtig: Geprüft wurde der aktuelle Arbeitsstand mit den vorhandenen installier
 Wiederholung vom Websiteverzeichnis in PowerShell:
 
 ```powershell
-$node = 'C:/Users/optim/OneDrive/Dokumente/New project/.vane-tools/node22.exe'
+$node = (Get-Command node).Source # Node.js 22 verwenden
 & $node --version
 & $node node_modules/eslint/bin/eslint.js .
 & $node node_modules/typescript/bin/tsc --noEmit

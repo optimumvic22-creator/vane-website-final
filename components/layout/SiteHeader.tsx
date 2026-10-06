@@ -31,8 +31,9 @@ const audienceNav: Record<AudienceSlug, NavLink[]> = {
     { href: '#results', labelEn: 'Staff report', labelDe: 'Teamreport' },
   ],
   partner: [
-    { href: '#benefits', labelEn: 'Partner value', labelDe: 'Partnernutzen' },
-    { href: '#how-it-works', labelEn: 'Pilot model', labelDe: 'Pilotmodell' },
+    { href: '#mqs-setup', labelEn: 'What we bring', labelDe: 'Was wir mitbringen' },
+    { href: '#partner-support', labelEn: 'How we work together', labelDe: 'Unsere Zusammenarbeit' },
+    { href: '#data-partnership', labelEn: 'Data partnership', labelDe: 'Datenpartnerschaft' },
     { href: '#results', labelEn: 'Deliverables', labelDe: 'Ergebnisse' },
   ],
 }
@@ -80,7 +81,7 @@ export function SiteHeader() {
       setMobileOpen(false)
       menuButtonRef.current?.focus()
     }
-    const desktop = window.matchMedia('(min-width: 1024px)')
+    const desktop = window.matchMedia(activeAudience === 'partner' ? '(min-width: 1280px)' : '(min-width: 1024px)')
     const closeOnDesktop = (event: MediaQueryListEvent) => {
       if (!event.matches) return
 
@@ -102,11 +103,12 @@ export function SiteHeader() {
     }
     document.addEventListener('keydown', closeOnEscape)
     desktop.addEventListener('change', closeOnDesktop)
+    if (desktop.matches) closeOnDesktop({ matches: true } as MediaQueryListEvent)
     return () => {
       document.removeEventListener('keydown', closeOnEscape)
       desktop.removeEventListener('change', closeOnDesktop)
     }
-  }, [mobileOpen])
+  }, [mobileOpen, activeAudience])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -121,7 +123,7 @@ export function SiteHeader() {
   useEffect(() => {
     if (!activeAudience) return
 
-    const sections = ['benefits', 'how-it-works', 'results']
+    const sections = navLinks.map((link) => link.href.slice(1))
       .map((id) => document.getElementById(id))
       .filter((section): section is HTMLElement => Boolean(section))
 
@@ -137,20 +139,20 @@ export function SiteHeader() {
 
     sections.forEach((section) => observer.observe(section))
     return () => observer.disconnect()
-  }, [activeAudience])
+  }, [activeAudience, navLinks])
 
   return (
     <header
       className={cn(
-        'fixed left-1/2 z-50 -translate-x-1/2 transition-all duration-200',
+        'fixed left-1/2 z-50 -translate-x-1/2 transition-[background-color,border-color,box-shadow,border-radius] duration-200',
         scrolled
-          ? 'top-3 w-[calc(100%-2rem)] max-w-[1240px] rounded-xl border border-border/10 bg-background/88 shadow-elevation-2 backdrop-blur-md'
+          ? 'top-3 w-[calc(100%-2rem)] max-w-[1240px] rounded-xl border border-border/10 bg-background shadow-elevation-2'
           : 'top-0 w-full max-w-none bg-transparent',
       )}
     >
       <div
         className={cn(
-          'mx-auto flex items-center justify-between transition-all duration-200',
+          'mx-auto flex items-center justify-between',
           scrolled
             ? 'h-12 w-full px-1 md:px-4'
             : 'h-16 max-w-[1600px] px-5 md:px-8',
@@ -175,7 +177,7 @@ export function SiteHeader() {
         <nav
           ref={desktopNavRef}
           aria-label={locale === 'de' ? 'Hauptnavigation' : 'Main navigation'}
-          className="hidden items-center gap-5 lg:flex xl:gap-8"
+          className={cn('hidden items-center gap-5 xl:gap-8', activeAudience === 'partner' ? 'xl:flex' : 'lg:flex')}
         >
           {navLinks.map((link) => (
             <Link
@@ -201,7 +203,7 @@ export function SiteHeader() {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-1 lg:hidden">
+        <div className={cn('flex items-center gap-1', activeAudience === 'partner' ? 'xl:hidden' : 'lg:hidden')}>
           <button
             ref={menuButtonRef}
             type="button"
@@ -224,7 +226,7 @@ export function SiteHeader() {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={FADE}
-          className="max-h-[calc(100dvh-76px-env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain border-b border-border/10 bg-background/95 backdrop-blur-md lg:hidden"
+          className={cn('max-h-[calc(100dvh-76px-env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain border-b border-border/10 bg-background', activeAudience === 'partner' ? 'xl:hidden' : 'lg:hidden')}
         >
           <div className="flex flex-col px-5 py-5">
             {navLinks.map((link) => (
