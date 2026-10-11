@@ -9,7 +9,7 @@ import { z } from 'zod'
  */
 export const signupSchema = z.object({
   email: z.email().max(320),
-  segment: z.enum(['individual', 'gym-clinic', 'federation', 'coach', 'partner']).optional(),
+  segment: z.enum(['individual', 'gym-clinic', 'federation', 'athlete', 'coach', 'partner']).optional(),
   updatesConsent: z.boolean().optional().default(false),
   locale: z.enum(['en', 'de']).optional(),
   source: z.string().max(120).optional(),

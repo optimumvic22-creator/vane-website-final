@@ -1,0 +1,9 @@
+.git/
+node_modules/
+.next/
+.env*
+!.env.example
+*.tsbuildinfo
+*.log
+public/**/*.mov
+public/**/*.MOV

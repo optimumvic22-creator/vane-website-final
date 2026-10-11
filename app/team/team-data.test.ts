@@ -11,16 +11,26 @@ import { getTeamMembers, TEAM_READ_TIMEOUT_MS, TEAM_REVALIDATE_SECONDS } from '.
 
 beforeEach(() => {
   cms.fetch.mockReset()
+  cms.withConfig.mockClear()
+  vi.stubEnv('NEXT_PUBLIC_SANITY_PROJECT_ID', 'test-project')
+  vi.stubEnv('NEXT_PUBLIC_SANITY_DATASET', 'test')
   vi.useFakeTimers()
   vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 })
 
 afterEach(() => {
+  vi.unstubAllEnvs()
   vi.restoreAllMocks()
   vi.useRealTimers()
 })
 
 describe('public team read', () => {
+  it('uses the built-in team without initializing an unconfigured CMS', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SANITY_PROJECT_ID', '')
+    await expect(getTeamMembers()).resolves.toBeNull()
+    expect(cms.withConfig).not.toHaveBeenCalled()
+    expect(cms.fetch).not.toHaveBeenCalled()
+  })
   it('uses an isolated published read with no retries and one explicit hourly cache', async () => {
     const members = [{ name: 'Public team fixture' }]
     cms.fetch.mockResolvedValue(members)
@@ -66,6 +76,7 @@ describe('public team read', () => {
       completed = true
       return result
     })
+    await vi.dynamicImportSettled()
     const firstSignal = cms.fetch.mock.calls[0][2].signal as AbortSignal
 
     await vi.advanceTimersByTimeAsync(TEAM_READ_TIMEOUT_MS - 1)
