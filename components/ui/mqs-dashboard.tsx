@@ -444,12 +444,9 @@ export function MqsDashboard({
           className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--mqs-value-inv)]/80 to-transparent"
         />
 
-        <div className="relative flex items-center justify-between border-b border-white/10 pb-3">
-          <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.16em] text-white/72 min-[390px]:text-[11px]">
-            Movement Quality Score
-          </p>
-          <p className="text-center font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[var(--mqs-value-inv)]/88 min-[390px]:text-[11px]">
-            {locale === 'de' ? '7 Domänen' : '7 domains'}
+        <div className="relative border-b border-white/10 pb-3">
+          <p className="w-full max-w-full break-normal text-balance text-center font-sans text-[11px] font-semibold leading-relaxed tracking-[0.04em] text-white/80 min-[390px]:text-xs">
+            Introducing The Movement Quality Score
           </p>
         </div>
 

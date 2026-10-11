@@ -47,10 +47,14 @@ function descendants(node: unknown): Element[] {
   return [element, ...descendants(element.props.children)]
 }
 
-function render(variant: 'audience' | 'standalone' = 'audience') {
+function render(
+  variant: 'audience' | 'standalone' = 'audience',
+  locale: 'en' | 'de' = 'en',
+  audience: 'athlete' | 'coach' | 'partner' = 'athlete',
+) {
   state.hookIndex = 0
   state.effects = []
-  return descendants(MqsDashboard({ variant }))
+  return descendants(MqsDashboard({ variant, locale, audience }))
 }
 
 function video() {
@@ -65,6 +69,23 @@ beforeEach(() => {
   state.systemReducedMotion = false
   state.adjusting = false
   state.failedSources = new Set()
+})
+
+describe.each(['athlete', 'coach', 'partner'] as const)('MQS introduction for %s', (audience) => {
+  it.each(['en', 'de'] as const)('uses one full-width centered header in %s', (locale) => {
+    const elements = render('audience', locale, audience)
+    const headers = elements.filter((element) =>
+      element.type === 'p' && element.props.children === 'Introducing The Movement Quality Score',
+    )
+    expect(headers).toHaveLength(1)
+    expect(headers[0].props.className).toContain('w-full')
+    expect(headers[0].props.className).toContain('text-center')
+    expect(headers[0].props.className).toContain('break-normal')
+    expect(headers[0].props.className).not.toContain('whitespace-nowrap')
+    expect(elements.some((element) =>
+      element.type === 'p' && ['Movement Quality Score', '7 domains', '7 Domänen'].includes(String(element.props.children)),
+    )).toBe(false)
+  })
 })
 
 describe('MQS media initialization and motion', () => {

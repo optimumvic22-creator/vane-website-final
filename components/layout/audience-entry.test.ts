@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { runInNewContext } from 'node:vm'
 import ts from 'typescript'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { mobileIntroReduction, visibleAthleteCenter } from './audience-entry-layout'
 
 const source = readFileSync(new URL('./AudienceEntry.tsx', import.meta.url), 'utf8')
 
@@ -143,6 +144,15 @@ describe('entry video source lifecycle', () => {
 })
 
 describe('approved entry typography and copy', () => {
+  it('removes the redundant welcome line in both languages', () => {
+    expect(source).not.toContain('Welcome to VANE')
+    expect(source).not.toContain('Willkommen bei VANE')
+  })
+
+  it('keeps the desktop spacing and Athlete nudge unchanged', () => {
+    expect(source).toContain('md:[--entry-intro-reduction:0px]')
+    expect(source).toContain('md:[--entry-athlete-nudge:2mm]')
+  })
   it('uses the existing Bebas display font and keeps the restrained hover', () => {
     expect(source).not.toContain('BarlowCondensed-SemiBold.woff2')
     expect(source.match(/font-display/g)).toHaveLength(2)
@@ -165,11 +175,31 @@ describe('approved entry typography and copy', () => {
     'WE MAKE MOVEMENT QUALITY COMPARABLE',
     'WIR MACHEN BEWEGUNGSQUALITÄT VERGLEICHBAR',
     'MAKE MOVEMENT QUALITY YOUR ADVANTAGE',
+    'TRAINIERE, WAS DICH WEITERBRINGT',
     'DATA TO SUPPORT YOUR DECISIONS',
-    'DATEN FÜR DEINE ENTSCHEIDUNGEN',
+    'FUNDIERT ENTSCHEIDEN',
     'INTEGRATE A MOVEMENT QUALITY STANDARD',
-    'INTEGRIERE EINEN STANDARD FÜR BEWEGUNGSQUALITÄT',
+    'MQS INTEGRIEREN',
   ])('keeps approved copy: %s', (copy) => {
     expect(source).toContain(`"${copy}"`)
+  })
+})
+
+describe('mobile entry layout geometry', () => {
+  it('reduces the original gap by 60% without accumulating reductions', () => {
+    expect(mobileIntroReduction(80, 0)).toBe(48)
+    expect(mobileIntroReduction(32, 48)).toBe(48)
+    expect(mobileIntroReduction(-10, 0)).toBe(0)
+  })
+
+  it.each([320, 360, 390, 430, 640, 767])('centers the visible Athlete wedge at %i pixels', (width) => {
+    const center = visibleAthleteCenter(width, 240)
+    expect(center).toBeGreaterThanOrEqual(80)
+    expect(center).toBeLessThan(120)
+    expect(240 - center).toBeGreaterThan(120)
+  })
+
+  it('handles a visible triangle without a rectangular upper portion', () => {
+    expect(visibleAthleteCenter(767, 180)).toBe(60)
   })
 })

@@ -3,15 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLocale } from "@/lib/locale";
 import { trackEvent } from "@/lib/analytics";
 import { useMediaPlayback } from "@/lib/use-media-playback";
 import { useMotionPaused } from "@/lib/motion-preference";
 import { AudienceNetworkField } from "./audience-network-field";
+import { mobileIntroReduction, visibleAthleteCenter } from "./audience-entry-layout";
 
 const ENTRY_BAND_HEIGHT =
-  "calc(max(var(--entry-intro-min), clamp(220px, 27svh, 260px), clamp(220px, calc(656px - 100vw), 300px)) + env(safe-area-inset-top))";
+  "calc(max(var(--entry-intro-min), clamp(220px, 27svh, 260px), clamp(220px, calc(656px - 100vw), 300px)) + env(safe-area-inset-top) - var(--entry-intro-reduction, 0px))";
 const PULSE_LENGTH_RATIO = 1;
 const TRACER_DURATION = 1.16;
 const TRACER_EASE = [0.4, 0, 0.2, 1] as const;
@@ -51,7 +52,7 @@ const roles = [
     contentClass: "items-center text-center",
     contentStyle: {
       left: "50%",
-      top: "calc(50% - var(--entry-athlete-offset) + 2mm)",
+      top: "calc(50% - var(--entry-athlete-offset) + var(--entry-athlete-nudge))",
       transform: "translate(-50%, -50%)",
     },
     overlayClass:
@@ -62,7 +63,7 @@ const roles = [
     },
     de: {
       title: "Athlet",
-      description: "MACH BEWEGUNGSQUALITÄT ZU DEINEM VORTEIL",
+      description: "TRAINIERE, WAS DICH WEITERBRINGT",
     },
   },
   {
@@ -97,7 +98,7 @@ const roles = [
     },
     de: {
       title: "Coach",
-      description: "DATEN FÜR DEINE ENTSCHEIDUNGEN",
+      description: "FUNDIERT ENTSCHEIDEN",
     },
   },
   {
@@ -132,7 +133,7 @@ const roles = [
     },
     de: {
       title: "Partner",
-      description: "INTEGRIERE EINEN STANDARD FÜR BEWEGUNGSQUALITÄT",
+      description: "MQS INTEGRIEREN",
     },
   },
 ] as const;
@@ -153,6 +154,46 @@ export function AudienceEntry() {
   >(null);
   const isGerman = locale === "de";
   const activeRole = roles.find((role) => role.slug === activeAudience);
+
+  useLayoutEffect(() => {
+    const root = mediaContainerRef.current;
+    const header = root?.querySelector("header");
+    const headline = root?.querySelector("h1");
+    const fan = root?.querySelector<HTMLElement>("[data-audience-fan]");
+    const stage = fan?.firstElementChild;
+    if (!root || !header || !headline || !fan || !stage) return;
+
+    const mobile = window.matchMedia("(max-width: 767px)");
+    let disposed = false;
+    const updateLayout = () => {
+      if (disposed || !mobile.matches) return;
+      const applied = Number.parseFloat(getComputedStyle(root).getPropertyValue("--entry-intro-reduction")) || 0;
+      const gap = headline.getBoundingClientRect().top - header.getBoundingClientRect().bottom;
+      const reduction = mobileIntroReduction(gap, applied);
+      root.style.setProperty("--entry-mobile-intro-reduction", `${reduction}px`);
+
+      const fanRect = fan.getBoundingClientRect();
+      const stageRect = stage.getBoundingClientRect();
+      const junction = stageRect.top + stageRect.height / 2 - fanRect.top;
+      const center = visibleAthleteCenter(fanRect.width, junction);
+      root.style.setProperty("--entry-mobile-athlete-offset", `${junction - center}px`);
+    };
+
+    // Only layout/font changes trigger measurements, never video frames or hover.
+    updateLayout();
+    const observer = new ResizeObserver(updateLayout);
+    observer.observe(header);
+    observer.observe(headline.parentElement!);
+    window.addEventListener("resize", updateLayout);
+    mobile.addEventListener("change", updateLayout);
+    void document.fonts.ready.then(updateLayout);
+    return () => {
+      disposed = true;
+      observer.disconnect();
+      window.removeEventListener("resize", updateLayout);
+      mobile.removeEventListener("change", updateLayout);
+    };
+  }, [locale, mediaContainerRef]);
 
   useEffect(() => {
     const elements = [athleteVideoRef.current, coachVideoRef.current, partnerVideoRef.current];
@@ -276,7 +317,7 @@ export function AudienceEntry() {
   return (
     <section
       ref={mediaContainerRef}
-      className="relative overflow-hidden bg-[#050607] [--entry-intro-min:320px] [--entry-mobile-junction-min:240px] [--entry-athlete-offset:clamp(128px,35vw,160px)] md:[--entry-intro-min:0px] md:[--entry-mobile-junction-min:0px] md:[--entry-athlete-offset:clamp(86px,max(20svh,min(32svh,19vw)),290px)]"
+      className="relative overflow-hidden bg-[#050607] [--entry-intro-min:320px] [--entry-intro-reduction:var(--entry-mobile-intro-reduction,0px)] [--entry-mobile-junction-min:240px] [--entry-athlete-offset:var(--entry-mobile-athlete-offset,clamp(128px,35vw,160px))] [--entry-athlete-nudge:0px] md:[--entry-intro-min:0px] md:[--entry-intro-reduction:0px] md:[--entry-mobile-junction-min:0px] md:[--entry-athlete-offset:clamp(86px,max(20svh,min(32svh,19vw)),290px)] md:[--entry-athlete-nudge:2mm]"
       style={{ minHeight: "max(100svh, 680px)" }}
     >
       <div
@@ -348,9 +389,6 @@ export function AudienceEntry() {
           }}
           className="pointer-events-none absolute inset-x-0 bottom-[calc(clamp(18px,2.8svh,30px)-3mm)] z-40 px-5 text-center md:bottom-[clamp(18px,2.8svh,30px)]"
         >
-          <p className="font-sans text-[clamp(12px,0.95vw,14px)] font-medium uppercase tracking-[0.10em] text-[var(--mqs-value-inv)]">
-            {isGerman ? "Willkommen bei VANE" : "Welcome to VANE"}
-          </p>
           <h1 className="mx-auto mt-2 max-w-[1440px] font-display text-[clamp(2.5rem,11vw,3.125rem)] font-[650] uppercase leading-[1.02] tracking-[0.012em] text-white sm:text-[clamp(3.075rem,5.43vw,5.64rem)]">
             Human Movement now has{" "}
             <span className="whitespace-nowrap">a language</span>
