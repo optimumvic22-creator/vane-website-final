@@ -3,6 +3,11 @@
 Base website revision: 85f92c8. Target: the existing Vercel project
 `vane-science-website` in team `vane-science`, serving vanescience.com.
 
+CI explicitly uses the npm 11.9.0 version declared by package.json. The Node 22
+runner otherwise supplied npm 10.9.9, whose optional-peer resolution rejected
+the lockfile for the newer Sanity workflow tooling. No TypeScript major upgrade
+is applied to the website compiler.
+
 ## Preserved production behavior
 
 The live deployment contained source changes not present in the GitHub snapshot.
