@@ -101,7 +101,7 @@ describe('demand-loaded audience forms', () => {
     expect(state.loadBoundary).not.toHaveBeenCalled()
     expect(html).not.toContain('<form')
     expect(html).toContain('Loading form')
-    expect(html).toContain('mailto:office@vanescience.com')
+    expect(html).toContain('mailto:mqs@vanescience.com')
   })
 
   it('loads only the inquiry form after athlete intent', async () => {

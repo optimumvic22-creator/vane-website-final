@@ -96,7 +96,7 @@ export function AudienceContactForm({
       <noscript>
         <p className="mt-4 text-sm text-muted-foreground">
           {locale === 'de' ? 'Bitte kontaktiere uns per E-Mail: ' : 'Please contact us by email: '}
-          <a className="underline" href="mailto:office@vanescience.com">office@vanescience.com</a>
+          <a className="underline" href="mailto:mqs@vanescience.com">mqs@vanescience.com</a>
         </p>
       </noscript>
     </div>
