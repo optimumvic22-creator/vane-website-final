@@ -133,7 +133,7 @@ const roles = [
     },
     de: {
       title: "Partner",
-      description: "MQS INTEGRIEREN",
+      description: "BEWEGUNGSQUALITÄT",
     },
   },
 ] as const;

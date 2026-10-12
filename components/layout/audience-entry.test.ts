@@ -179,7 +179,7 @@ describe('approved entry typography and copy', () => {
     'DATA TO SUPPORT YOUR DECISIONS',
     'FUNDIERT ENTSCHEIDEN',
     'INTEGRATE A MOVEMENT QUALITY STANDARD',
-    'MQS INTEGRIEREN',
+    'BEWEGUNGSQUALITÄT',
   ])('keeps approved copy: %s', (copy) => {
     expect(source).toContain(`"${copy}"`)
   })
