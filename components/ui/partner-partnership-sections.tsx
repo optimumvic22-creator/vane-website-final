@@ -7,7 +7,7 @@ type PartnershipSection = {
   eyebrow: string
   title: string
   body: string
-  image: { src: string; alt: string; contain?: boolean } | null
+  image: { src: string; alt: string; contain?: boolean }
 }
 
 export const partnerPartnershipSections: Record<Locale, PartnershipSection[]> = {
@@ -38,7 +38,11 @@ export const partnerPartnershipSections: Record<Locale, PartnershipSection[]> = 
       eyebrow: 'Data partnership',
       title: 'Help build the world’s movement quality reference.',
       body: 'NormVault is the database behind every MQS comparison. Partner facilities contribute at the highest level, which makes them strategic data partners, not just users. Contributions are anonymised numbers only, and your clients and raw data stay yours.',
-      image: null,
+      image: {
+        src: '/audiences/normvault-network-v2.webp',
+        alt: 'Dense connected reference groups shown as an abstract NormVault network illustration',
+        contain: true,
+      },
     },
   ],
   de: [
@@ -68,47 +72,13 @@ export const partnerPartnershipSections: Record<Locale, PartnershipSection[]> = 
       eyebrow: 'Datenpartnerschaft',
       title: 'Gestalte die weltweite Referenz für Bewegungsqualität mit.',
       body: 'NormVault ist die Datenbank hinter jedem MQS Vergleich. Mit ihren Beiträgen werden Partnereinrichtungen zu strategischen Datenpartnern, nicht nur zu Anwendern. Geteilt werden ausschließlich anonymisierte Zahlenwerte, während deine Kunden und Rohdaten bei dir bleiben.',
-      image: null,
+      image: {
+        src: '/audiences/normvault-network-v2.webp',
+        alt: 'Dicht verknüpfte Referenzbereiche des NormVault als Netzwerkillustration',
+        contain: true,
+      },
     },
   ],
-}
-
-// Static and deliberately without measurements: an editorial reference visual,
-// not a chart of real clients or a claim about the database's size.
-const referenceNodes = Array.from({ length: 54 }, (_, index) => {
-  const column = index % 9
-  const row = Math.floor(index / 9)
-  return {
-    x: 58 + column * 59 + Math.sin(index * 1.8) * 17,
-    y: 48 + row * 59 + Math.cos(index * 2.1) * 16,
-  }
-})
-
-function ReferenceVisual() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 600 400" className="h-full w-full text-[var(--mqs-value-inv)]">
-      <rect width="600" height="400" fill="#080f12" />
-      <g fill="none" stroke="currentColor" strokeWidth="0.8">
-        {referenceNodes.flatMap((point, index) =>
-          referenceNodes.slice(index + 1).flatMap((next, offset) => {
-            const distance = Math.hypot(point.x - next.x, point.y - next.y)
-            return distance < 102 ? (
-              <path key={`${index}-${offset}`} d={`M${point.x},${point.y}L${next.x},${next.y}`} opacity={0.12 + (1 - distance / 102) * 0.2} />
-            ) : []
-          }),
-        )}
-        <path d="M72 196C148 110 225 290 300 202S445 105 542 182M92 310C205 342 223 159 300 202S423 285 512 310M128 78C231 64 215 188 300 202S379 73 484 82" strokeWidth="1.5" opacity="0.48" />
-        <circle cx="300" cy="202" r="49" opacity="0.16" />
-        <circle cx="300" cy="202" r="26" opacity="0.4" />
-      </g>
-      <g fill="currentColor">
-        {referenceNodes.map((point, index) => (
-          <circle key={index} cx={point.x} cy={point.y} r={index % 7 === 0 ? 3.4 : 1.8} opacity={index % 7 === 0 ? 0.8 : 0.35} />
-        ))}
-        <circle cx="300" cy="202" r="8" opacity="0.9" />
-      </g>
-    </svg>
-  )
 }
 
 export function PartnerPartnershipSections({ locale }: { locale: Locale }) {
@@ -124,15 +94,15 @@ export function PartnerPartnershipSections({ locale }: { locale: Locale }) {
               className="min-w-0 scroll-mt-24 overflow-hidden rounded-xl border border-white/10 bg-[#0B0C0E] sm:grid sm:grid-cols-[0.85fr_1.15fr] md:scroll-mt-28 lg:block"
             >
               <div className="relative aspect-[4/3] overflow-hidden border-b border-white/10 bg-[#050607] sm:aspect-auto sm:min-h-64 sm:border-b-0 sm:border-r lg:aspect-[4/3] lg:min-h-0 lg:border-b lg:border-r-0">
-                {section.image ? (
-                  <Image
-                    src={section.image.src}
-                    alt={section.image.alt}
-                    fill
-                    sizes="(min-width: 1024px) 32vw, (min-width: 768px) 90vw, 100vw"
-                    className={`${section.image.contain ? 'object-contain' : 'object-cover object-[center_35%]'} brightness-[0.85] saturate-[0.8]`}
-                  />
-                ) : <ReferenceVisual />}
+                <Image
+                  src={section.image.src}
+                  alt={section.image.alt}
+                  fill
+                  sizes="(min-width: 1280px) 390px, (min-width: 1024px) 32vw, (min-width: 640px) 40vw, calc(100vw - 40px)"
+                  className={section.id === 'data-partnership'
+                    ? 'object-contain'
+                    : `${section.image.contain ? 'object-contain' : 'object-cover object-[center_35%]'} brightness-[0.85] saturate-[0.8]`}
+                />
               </div>
               <div className="p-5 md:p-6">
                 <p className="flex items-center gap-2.5 font-sans text-xs font-semibold uppercase leading-snug tracking-[0.08em] text-white/70">

@@ -17,13 +17,13 @@ describe('partner briefing sections', () => {
       }
     }
     expect(sections[2].body).toContain('NormVault')
-    expect(sections[2].image).toBeNull()
+    expect(sections[2].image.src).toBe('/audiences/normvault-network-v2.webp')
+    expect(sections[2].image.contain).toBe(true)
   })
 
   it('does not introduce new forms, CTAs, animation or artificial score claims', () => {
     const source = readFileSync(new URL('./partner-partnership-sections.tsx', import.meta.url), 'utf8')
     expect(source).not.toMatch(/<button|<form|<a\s|<h1|setInterval|requestAnimationFrame/)
-    expect(source).toContain('aria-hidden="true" viewBox="0 0 600 400"')
     expect(source).toContain('object-contain')
   })
 
