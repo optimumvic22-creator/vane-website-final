@@ -1,0 +1,133 @@
+/* Scoped styles from the approved scale prototype. */
+.coach-normvault{--accent:#81d8cf;--body:var(--font-body-runtime),Arial,sans-serif;--display:var(--font-display-runtime),Impact,sans-serif;--mono:var(--font-data-runtime),monospace;color:#f4f5f4;background:#000;scroll-margin-top:104px;padding:72px 24px;font:15px/1.6 var(--body)}
+.coach-normvault .normvault-inner{max-width:1264px;margin:auto;scroll-margin-top:104px}
+.coach-normvault p,.coach-normvault h2,.coach-normvault h3,.coach-normvault h4{margin:0}
+.coach-normvault button{cursor:pointer;color:inherit;font:inherit}
+.coach-normvault button:focus-visible,.coach-normvault input:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.coach-normvault .hero em{font-style:normal}
+.coach-normvault .chart{min-width:0;position:relative}.coach-normvault .compare-control{cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 18px;background:var(--accent);color:#103630;border-radius:5px;font-size:13px;font-weight:650;min-height:47px;box-shadow:0 0 0 1px #b3efe666;transition:background .2s}.coach-normvault .compare-control input{appearance:none;width:18px;height:18px;flex:none;margin:0;border:1px solid #15493d88;border-radius:3px;background:#ffffff12;cursor:pointer}.coach-normvault .compare-control input:checked{background:#123e36;border-color:#123e36}.coach-normvault .compare-control input:checked:after{content:'✓';display:block;color:#a2eee3;font:700 14px/16px var(--body);text-align:center}.coach-normvault .compare-control:hover{background:#a0e5db}.coach-normvault .compare-control input:focus-visible{outline-color:#123e36;outline-offset:3px}.coach-normvault.compare-on .compare-control{background:#b2e7df}.coach-normvault .chart-body{padding:0 4px}.coach-normvault .axis-heading{padding-left:34px;margin-bottom:14px;font:11px var(--mono);color:#9faeb3}.coach-normvault .plot-shell{padding:0 10px 26px 34px}.coach-normvault .plot{position:relative;height:300px;border-bottom:1px solid #ffffff2a;border-left:1px solid #ffffff2a}.coach-normvault .grid-line{position:absolute;background:#ffffff08;pointer-events:none}.coach-normvault .grid-line.h{left:0;right:0;height:1px}.coach-normvault .grid-line.v{top:0;bottom:0;width:1px}.coach-normvault .tick{position:absolute;color:#788990;font:9px var(--mono);pointer-events:none}.coach-normvault .median-line{position:absolute;pointer-events:none;z-index:1;transition:top .8s cubic-bezier(.22,1,.36,1),left .8s cubic-bezier(.22,1,.36,1)}.coach-normvault .median-line.vertical{top:0;bottom:0;border-left:1px dashed #9ab7b66b}.coach-normvault .median-line.horizontal{left:0;right:0;border-top:1px dashed #9ab7b66b}.coach-normvault .peer-dot{position:absolute;width:5px;height:5px;transform:translate(-50%,-50%);border-radius:50%;background:#789396;opacity:0;transition:opacity .65s;pointer-events:none}.coach-normvault.compare-on .peer-dot{opacity:.54}.coach-normvault .athlete-dot{position:absolute;width:25px;height:25px;transform:translate(-50%,-50%);padding:0;border:0;background:transparent;border-radius:50%;z-index:3;transition:top .8s cubic-bezier(.22,1,.36,1),left .8s cubic-bezier(.22,1,.36,1)}.coach-normvault .athlete-dot:after{content:'';display:block;width:8px;height:8px;border-radius:50%;background:var(--accent);border:1px solid #b9f4ed;margin:auto;transition:box-shadow .2s}.coach-normvault .athlete-dot:hover:after,.coach-normvault .athlete-dot:focus-visible:after,.coach-normvault .athlete-dot.selected:after{background:#e2fff9;box-shadow:0 0 0 5px #81d8cf26}.coach-normvault .athlete-dot.selected:before{content:'';position:absolute;inset:1px;border:1px solid #81d8cf88;border-radius:50%}.coach-normvault .selected-label{position:absolute;font-size:10px;color:#dbebe8;pointer-events:none;transform:translate(14px,-100%);padding:2px 5px;background:#08090acd;border-radius:3px;z-index:4;transition:top .8s cubic-bezier(.22,1,.36,1),left .8s cubic-bezier(.22,1,.36,1)}.coach-normvault .plot-tip{position:absolute;z-index:7;pointer-events:none;background:#19272a;border:1px solid #81d8cf66;border-radius:6px;width:184px;padding:12px;box-shadow:0 8px 26px #0009;font-size:11px;line-height:1.6;transform:translate(-50%,-112%)}.coach-normvault .plot-tip b{display:block;color:#edfaf6;font-size:13px;margin-bottom:5px}.coach-normvault .plot-tip span{display:block;color:#adc0c5}.coach-normvault .axis-x{text-align:right;font:11px var(--mono);color:#9faeb3;padding-right:10px;margin-top:2px}
+@media(min-width:1500px){.coach-normvault .plot{height:330px}}
+@media(max-width:850px){.coach-normvault .compare-control{font-size:11px;padding:12px 13px;gap:9px}.coach-normvault .axis-heading,.coach-normvault .axis-x{font-size:10px}.coach-normvault .plot{height:300px}}
+@media(max-width:640px){.coach-normvault .compare-control{width:100%;justify-content:center;font-size:12px;min-height:49px}.coach-normvault .plot{height:285px}.coach-normvault .chart-body{padding:0}.coach-normvault .axis-heading,.coach-normvault .axis-x{font-size:10px}.coach-normvault .plot-shell{padding-left:29px;padding-right:9px}.coach-normvault .axis-heading{padding-left:29px}.coach-normvault .tick{font-size:8px}}
+
+/* Round three keeps the established type, colour and interactive plot,
+   then gives the chart and process separate, adjacent visual areas. */
+.coach-normvault .hero{text-align:center;max-width:1120px;margin:0 auto 37px}
+.coach-normvault .overline{display:flex;justify-content:center;align-items:center;gap:10px;font-size:13px;line-height:1.6;letter-spacing:1.2px;text-transform:uppercase;color:#c3cece;margin:0 0 17px}
+.coach-normvault .overline:before{content:'';width:5px;height:5px;background:var(--accent);flex:none}
+.coach-normvault .hero h2{font:400 clamp(49px,4.7vw,65px)/1.03 var(--display);letter-spacing:1px;text-transform:uppercase}
+.coach-normvault .hero h2 em{color:#d4e4e1}
+.coach-normvault .hero .subtitle{font-size:17px;line-height:1.6;color:#aeb9bd;max-width:65ch;margin:24px auto 0}
+.coach-normvault .hero .subtitle strong{font-weight:500;color:#e5ecea}
+.coach-normvault .comparison-stage{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:0 50px;align-items:center;max-width:1180px;margin:0 auto}
+.coach-normvault .demo-toolbar{grid-column:1/-1;margin-bottom:22px;display:flex;justify-content:flex-start;padding-left:38px}
+.coach-normvault .demo-toolbar .compare-control{font-size:14px;min-height:48px;padding:12px 18px;gap:12px}
+.coach-normvault .comparison-stage .chart{grid-column:1;min-width:0}
+.coach-normvault .axis-heading,.coach-normvault .axis-x{font-size:12px;color:#a7b6bb}
+.coach-normvault .plot{height:280px}
+.coach-normvault .rank-visual{grid-column:2;align-self:center;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;margin:5px 0 0;padding:0;border:0;min-height:285px}
+.coach-normvault .rank-visual svg{display:block;max-width:100%;height:auto}
+.coach-normvault .rank-number{font:400 99px/.95 var(--display);color:#c6e9dd;letter-spacing:-1px;white-space:nowrap}
+.coach-normvault .ruler-frame{position:relative;width:190px;height:254px;margin:24px auto}
+.coach-normvault .ruler-line{position:absolute;left:39px;bottom:0;top:0;width:2px;background:#b6d8ce24}
+.coach-normvault .ruler-tick{position:absolute;left:27px;width:26px;height:1px;background:#99bdb54a}
+.coach-normvault .ruler-tick.major{left:23px;width:34px;background:#b9ded25c}
+.coach-normvault .ruler-number{position:absolute;left:0;font:11px var(--mono);color:#829f98;transform:translateY(50%);width:20px;text-align:right}
+.coach-normvault .rank-marker{position:absolute;left:33px;bottom:75%;display:flex;align-items:center;gap:24px;transform:translateY(50%);transition:bottom .85s cubic-bezier(.22,1,.36,1)}
+.coach-normvault .rank-marker:before{content:'';height:14px;width:14px;flex:none;border-radius:50%;background:#c5eadc;box-shadow:0 0 0 6px #81d8cf18}
+.coach-normvault .rank-marker .rank-number{font-size:85px}
+.coach-normvault .rank-ghost{position:absolute;left:34px;width:12px;height:12px;bottom:75%;transform:translateY(50%);border-radius:50%;border:1px solid #a4c8ba75;opacity:0;transition:bottom .85s,opacity .4s}
+.coach-normvault.compare-on .rank-ghost{opacity:1}
+.coach-normvault .workflow{margin:42px auto 0;padding-top:35px;border-top:1px solid #ffffff1a;max-width:1180px}
+.coach-normvault .workflow-heading{text-align:center;margin:0 auto 25px}
+.coach-normvault .workflow-heading h3{font-size:28px;font-weight:500;letter-spacing:-.5px;line-height:1.3}
+.coach-normvault .workflow-heading h3 span{color:var(--accent)}
+.coach-normvault .workflow-heading>p{font-size:16px;line-height:1.6;color:#9fafb3;margin:13px auto 0;max-width:69ch}
+@media(min-width:1500px){.coach-normvault .plot{height:300px}.coach-normvault .workflow{margin-top:44px}}
+@media(max-width:1100px){.coach-normvault .comparison-stage{grid-template-columns:minmax(0,1fr) 230px;gap:0 35px}.coach-normvault .hero h2{font-size:59px}.coach-normvault .hero .subtitle{font-size:17px}.coach-normvault .workflow-heading h3{font-size:26px}.coach-normvault .rank-marker .rank-number{font-size:77px}.coach-normvault .ruler-frame{width:176px}}
+@media(max-width:850px){.coach-normvault .hero{margin-bottom:30px}.coach-normvault .overline{font-size:12px;letter-spacing:1px;margin-bottom:17px}.coach-normvault .hero h2{font-size:55px}.coach-normvault .hero .subtitle{font-size:16px;max-width:64ch;margin-top:20px}.coach-normvault .comparison-stage{grid-template-columns:minmax(0,1fr) 175px;gap:0 24px}.coach-normvault .demo-toolbar{margin-bottom:23px;padding-left:34px}.coach-normvault .plot{height:280px}.coach-normvault .axis-heading,.coach-normvault .axis-x{font-size:11px}.coach-normvault .ruler-frame{width:155px;height:235px}.coach-normvault .rank-marker{gap:17px}.coach-normvault .rank-marker .rank-number{font-size:65px}.coach-normvault .rank-visual{min-height:255px}.coach-normvault .workflow{padding-top:30px;margin-top:33px}.coach-normvault .workflow-heading h3{font-size:25px;max-width:31ch;margin:auto;line-height:1.4}.coach-normvault .workflow-heading h3 span{display:block}.coach-normvault .workflow-heading>p{font-size:15px;max-width:55ch;margin-top:12px}}
+@media(max-width:600px){.coach-normvault .hero{margin-bottom:27px}.coach-normvault .overline{font-size:11px;line-height:1.6;letter-spacing:.7px;max-width:32ch;margin-left:auto;margin-right:auto;gap:8px}.coach-normvault .hero h2{font-size:45px;line-height:1.04;letter-spacing:.2px}.coach-normvault .hero h2 em{display:block}.coach-normvault .hero .subtitle{font-size:15px;line-height:1.6;margin-top:19px;max-width:37ch}.coach-normvault .comparison-stage{grid-template-columns:minmax(0,1fr) 92px;gap:0 17px}.coach-normvault .demo-toolbar{padding-left:0;margin-bottom:23px}.coach-normvault .demo-toolbar .compare-control{font-size:12px;min-height:49px;padding:12px;width:100%;justify-content:center}.coach-normvault .chart-body{padding:0}.coach-normvault .plot-shell{padding-left:25px;padding-right:3px;padding-bottom:25px}.coach-normvault .axis-heading{padding-left:25px;font-size:9px;margin-bottom:13px;white-space:nowrap}.coach-normvault .axis-x{font-size:9px;text-align:right;padding-right:3px;margin-top:1px;white-space:nowrap}.coach-normvault .plot{height:222px}.coach-normvault .tick{font-size:8px}.coach-normvault .athlete-dot{width:22px;height:22px}.coach-normvault .athlete-dot:after{width:6px;height:6px}.coach-normvault .athlete-dot.selected:before{inset:1px}.coach-normvault .peer-dot{width:3px;height:3px}.coach-normvault .selected-label{font-size:8px;transform:translate(10px,-110%)}.coach-normvault .rank-visual{min-height:225px;margin-top:5px}.coach-normvault .ruler-frame{width:92px;height:187px;margin:23px 0}.coach-normvault .ruler-line{left:14px;width:1px}.coach-normvault .ruler-tick{left:7px;width:14px}.coach-normvault .ruler-tick.major{left:5px;width:18px}.coach-normvault .ruler-number{left:-8px;width:14px;font-size:8px}.coach-normvault .rank-marker{left:10px;gap:8px}.coach-normvault .rank-marker:before{width:9px;height:9px;box-shadow:0 0 0 3px #81d8cf18}.coach-normvault .rank-marker .rank-number{font-size:39px;letter-spacing:-.5px}.coach-normvault .rank-ghost{width:8px;height:8px;left:10.5px}.coach-normvault .plot-tip{width:164px;font-size:10px}.coach-normvault .plot-tip b{font-size:12px}.coach-normvault .workflow{margin-top:30px;padding-top:27px}.coach-normvault .workflow-heading{margin-bottom:27px}.coach-normvault .workflow-heading h3{font-size:24px;line-height:1.35;letter-spacing:-.4px}.coach-normvault .workflow-heading h3 span{display:block}.coach-normvault .workflow-heading>p{font-size:15px;line-height:1.6;max-width:33ch;margin-top:13px}}
+@media(max-width:360px){.coach-normvault .hero h2{font-size:41px}.coach-normvault .comparison-stage{grid-template-columns:minmax(0,1fr) 82px;gap:0 13px}.coach-normvault .rank-marker .rank-number{font-size:34px}.coach-normvault .ruler-frame{width:82px}.coach-normvault .axis-heading,.coach-normvault .axis-x{font-size:8px}.coach-normvault .workflow-heading h3{font-size:22px}}
+
+.coach-normvault .four-step-workflow{margin-top:42px;padding-top:38px}
+.coach-normvault .four-step-workflow .workflow-heading{margin-bottom:34px}
+.coach-normvault .coaching-process{display:grid;grid-template-columns:1fr 1fr;list-style:none;padding:0;margin:0;border:1px solid #beded526;border-radius:10px;overflow:hidden;background:#b4e6d903}
+.coach-normvault .process-step{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);align-items:center;gap:22px;padding:28px 24px;min-width:0;position:relative}
+.coach-normvault .process-step:nth-child(odd){border-right:1px solid #beded51f}
+.coach-normvault .process-step:nth-child(-n+2){border-bottom:1px solid #beded51f}
+.coach-normvault .process-visual{min-width:0;display:flex;align-items:center;justify-content:center;min-height:238px}
+.coach-normvault .assessment-scene[data-hairline]{--hl-edge:#86aaa4;--hl-mid:#64877e;--hl-lo:#3b5850;--hl-hi:#cae9dd;--hl-plate:#0d1110;--hl-sw:1.15;width:100%;aspect-ratio:400/320;min-height:220px;touch-action:pan-y}
+.coach-normvault .assessment-scene svg{width:100%;height:100%;display:block;overflow:visible}
+.coach-normvault .process-copy{text-align:left}
+.coach-normvault .step-index{font:11px/1 var(--mono);letter-spacing:1px;color:#8fb7ad;display:block;margin-bottom:14px}
+.coach-normvault .process-copy h4{font:500 28px/1.15 var(--body);letter-spacing:-.6px;margin:0}
+.coach-normvault .step-lead{font-size:17px;line-height:1.45;font-weight:500;color:#c6dfd7;margin-top:13px}
+.coach-normvault .step-description{font-size:16px;line-height:1.6;color:#a7b6b8;margin-top:10px;max-width:27ch}
+.coach-normvault .workflow-diagram{width:100%;height:auto;overflow:visible;font-family:var(--body);font-size:14px;fill:#c4d6d1;stroke:none}
+.coach-normvault .workflow-diagram .diagram-panel{fill:#0d1313;stroke:#7da89b58;stroke-width:1}
+.coach-normvault .workflow-diagram .interpret-sheet{fill:#101817;stroke:#9fc8bb9c;stroke-width:1}
+.coach-normvault .workflow-diagram .diagram-grid{fill:none;stroke:#91b5aa3b;stroke-width:1}
+.coach-normvault .workflow-diagram .diagram-line{fill:none;stroke:#addacd;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.coach-normvault .workflow-diagram .diagram-guide{fill:none;stroke:#91b5aa70;stroke-width:1;stroke-dasharray:3 4}
+.coach-normvault .workflow-diagram .reference-dot{fill:#85aa9f70;stroke:none}
+.coach-normvault .workflow-diagram .selected-point,.coach-normvault .workflow-diagram .priority-ring{fill:none;stroke:#b8e6d8;stroke-width:1.5}
+.coach-normvault .workflow-diagram .solid-point{fill:#b8e6d8;stroke:none}
+.coach-normvault .workflow-diagram .diagram-kicker{font:9px var(--mono);letter-spacing:.4px;fill:#8fafaa}
+.coach-normvault .workflow-diagram .diagram-strong{font-weight:500;fill:#d0e7de}
+.coach-normvault .workflow-diagram .day-active{fill:#a0d9c819;stroke:#a0d9c845}
+.coach-normvault .workflow-diagram .day-label{font:11px var(--mono);fill:#bfe2d5}
+.coach-normvault .workflow-diagram .day-muted{font:11px var(--mono);fill:#68867c}
+.coach-normvault .workflow-diagram .exercise-tile{fill:none;stroke:#8bafa24a}
+.coach-normvault .workflow-diagram .set-count{font:11px var(--mono);fill:#9cb7ad}
+.coach-normvault .workflow-diagram .exercise-card{fill:#15221e;stroke:#b5decc;stroke-width:1}
+.coach-normvault .workflow-diagram .exercise-note{font-size:10px;fill:#93afa3}
+.coach-normvault .step-index{display:flex;align-items:center;gap:12px;flex-wrap:wrap;line-height:1.5}
+.coach-normvault .step-owner{font:10px/1.5 var(--mono);letter-spacing:.3px;color:#748f86}
+.coach-normvault .process-step.coach-handoff{background:#191710;border-top:1px dashed #c8b37d6b;border-left:1px dashed #c8b37d6b;margin-top:-1px;margin-left:-1px}
+.coach-normvault .coach-handoff .step-index,.coach-normvault .coach-handoff .step-owner{color:#cdbb8c}
+.coach-normvault .coach-handoff .step-owner{font-size:10.5px}
+.coach-normvault .coach-handoff .step-lead{color:#e0d5b8}
+.coach-normvault .coach-handoff .step-description{color:#bdb9ab}
+.coach-normvault .workflow-diagram .needs-note{fill:#101a16;stroke:#7da89b55;stroke-width:1}
+.coach-normvault .workflow-diagram .need-result{font-size:12px;fill:#bcd8cc}
+.coach-normvault .workflow-diagram .handoff-line{fill:none;stroke:#bcac80;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round}
+.coach-normvault .workflow-diagram .coach-action{font:8.2px var(--mono);letter-spacing:.3px;fill:#c6b98e}
+.coach-normvault .workflow-diagram .relay-panel{fill:#181911;stroke:#c4b37d9c;stroke-width:1}
+.coach-normvault .workflow-diagram .programme-label{font-size:11px;fill:#c1b99e}
+.coach-normvault .coach-handoff .workflow-diagram .day-active{fill:#d4bf8320;stroke:#c7b17b5c}
+.coach-normvault .coach-handoff .workflow-diagram .day-label{fill:#e5d9b5}
+.coach-normvault .coach-handoff .workflow-diagram .day-muted{fill:#938971}
+.coach-normvault .coach-handoff .workflow-diagram .diagram-grid,.coach-normvault .coach-handoff .workflow-diagram .exercise-tile{stroke:#c3b17c40}
+.coach-normvault .coach-handoff .workflow-diagram .diagram-line{stroke:#d7c89e}
+.coach-normvault .coach-handoff .workflow-diagram .set-count{fill:#c6bda5}
+.coach-normvault .workflow-diagram .gait-bone{fill:#14211c;stroke:#c5e2d7;stroke-width:1.3;stroke-linejoin:round}
+.coach-normvault .workflow-diagram .gait-bone.far{stroke:#799c91;fill:#101a17}
+.coach-normvault .workflow-diagram .gait-pelvis{fill:#24372e;stroke:#9fc4b5;stroke-width:1.2;stroke-linejoin:round}
+.coach-normvault .workflow-diagram .gait-joint{fill:#c1e2d3;stroke:#22372c;stroke-width:.7}
+.coach-normvault .workflow-diagram .gait-joint.far{fill:#83a598}
+.coach-normvault .workflow-diagram .gait-head{fill:#14211c;stroke:#b9dccd;stroke-width:1.4}
+.coach-normvault .workflow-diagram .gait-ground{fill:none;stroke:#7fa39045;stroke-width:1}
+.coach-normvault .workflow-diagram .gait-axis{fill:none;stroke:#8fbba66b;stroke-width:1}
+.coach-normvault .workflow-diagram .gait-contact{fill:none;stroke:#b6dcc891;stroke-width:1.1}
+.coach-normvault .workflow-diagram .radar-grid{fill:none;stroke:#95b7a94f;stroke-width:.7}
+.coach-normvault .workflow-diagram .radar-reference{fill:none;stroke:#9ebaae7f;stroke-width:.7;stroke-dasharray:2 2}
+.coach-normvault .workflow-diagram .radar-profile{fill:#a9d5c31c;stroke:#b4decf;stroke-width:1.3;stroke-linejoin:round}
+@media(max-width:1200px){.coach-normvault .process-step{grid-template-columns:1fr;padding:25px 30px;gap:12px}.coach-normvault .process-visual{height:235px;min-height:0}.coach-normvault .assessment-scene{width:300px;min-height:0;height:240px}.coach-normvault .workflow-diagram{max-width:300px;height:235px}.coach-normvault .process-copy{padding:0 12px 5px}.coach-normvault .step-index{float:left;margin:8px 12px 0 0}.coach-normvault .process-copy h4{font-size:27px}.coach-normvault .step-lead{margin-top:14px}.coach-normvault .step-description{max-width:38ch}}
+@media(max-width:700px){.coach-normvault .coaching-process{grid-template-columns:1fr}.coach-normvault .process-step{padding:22px 24px 30px;gap:9px}.coach-normvault .process-step:nth-child(odd){border-right:0}.coach-normvault .process-step:not(:last-child){border-bottom:1px solid #beded51f}.coach-normvault .process-visual{height:230px}.coach-normvault .process-copy{padding:0 8px}.coach-normvault .process-copy h4{font-size:27px}.coach-normvault .step-lead{font-size:17px}.coach-normvault .step-description{font-size:16px;max-width:none}.coach-normvault .workflow-diagram{height:230px}.coach-normvault .assessment-scene{height:240px;width:300px;max-width:100%}.coach-normvault .four-step-workflow{margin-top:30px;padding-top:28px}.coach-normvault .four-step-workflow .workflow-heading{margin-bottom:28px}}
+@media(max-width:360px){.coach-normvault .process-step{padding:16px 15px 25px}.coach-normvault .process-copy{padding:0 5px}.coach-normvault .process-visual{height:205px}.coach-normvault .workflow-diagram{height:205px}.coach-normvault .assessment-scene{height:215px}.coach-normvault .step-description{font-size:15px}}
+@media(max-width:1200px){.coach-normvault .process-copy .step-index{float:none;margin:0 0 12px}.coach-normvault .coach-handoff .step-owner{font-size:10.5px}}
+@media(max-width:700px){.coach-normvault .process-step.coach-handoff{border-left:0;margin-left:0}}
+
+.coach-normvault .assessment-art svg{display:block;width:100%;height:auto}
+.coach-normvault .plot-tip{left:50%;top:0;transform:translate(-50%,10px);max-width:calc(100% - 8px)}
+.coach-normvault .demo-note{font:10px var(--mono);color:#8fa6a1;margin:20px 0 0;text-align:center}
+@media(max-width:600px){.coach-normvault{padding:52px 20px}}
+@media(max-width:360px){.coach-normvault{padding-left:16px;padding-right:16px}}
+@media(prefers-reduced-motion:reduce){.coach-normvault *,.coach-normvault *:before,.coach-normvault *:after{transition:none!important;animation:none!important}}
+/* Explicit chart coordinates avoid utility-class collisions in the full page. */
+.coach-normvault .overline{text-decoration:none}
+.coach-normvault .tick.y{left:-29px;width:24px;text-align:right;transform:translateY(-50%)}
+.coach-normvault .tick.x{bottom:-21px;transform:translateX(-50%)}
+.coach-normvault .grid-line.h{left:0;right:0;height:1px}
+.coach-normvault .grid-line.v{top:0;bottom:0;width:1px}
+@media(max-width:600px){.coach-normvault .tick.y{left:-25px;width:19px}}

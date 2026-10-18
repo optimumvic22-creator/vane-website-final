@@ -120,12 +120,12 @@ const DOMAIN_MEDIA: Partial<
     objectPosition: '50% 50%',
   },
   POWER: {
-    src: '/media/mqs-domains/power-dario-keiser-push-pull-web.mp4',
+    src: '/media/mqs-domains/power-2026-10-14-web.mp4',
     label: 'Power',
     objectPosition: '50% 50%',
   },
   MOTOR: {
-    src: '/media/mqs-domains/motor-img-6130-web.mp4',
+    src: '/media/mqs-domains/motor-control-framed-2026-10-14-web.mp4',
     label: 'Motor',
     objectPosition: '50% 50%',
   },
@@ -208,6 +208,9 @@ export type MqsDashboardProps = {
   overallScore?: number
   locale?: DashboardLocale
   audience?: DashboardAudience
+  initialMediaDomain?: MqsDomainCode
+  domainExplanations?: Partial<Record<MqsDomainCode, { name: string; description: string }>>
+  onDomainSelect?: (code: MqsDomainCode) => void
 }
 
 export function MqsDashboard({
@@ -216,6 +219,9 @@ export function MqsDashboard({
   overallScore,
   locale = 'en',
   audience = 'athlete',
+  initialMediaDomain,
+  domainExplanations,
+  onDomainSelect,
 }: MqsDashboardProps) {
   const isCompact = variant === 'compact'
   const activeDomains = domains ?? DEFAULT_DOMAINS
@@ -238,12 +244,13 @@ export function MqsDashboard({
   const [activeDomainCode, setActiveDomainCode] =
     useState<MqsDomainCode | null>(null)
   const [activeMediaDomainCode, setActiveMediaDomainCode] =
-    useState<MqsDomainCode | null>(null)
+    useState<MqsDomainCode | null>(initialMediaDomain ?? null)
   const [readyDomainSrc, setReadyDomainSrc] = useState<string | null>(null)
   const [failedDomainSources, setFailedDomainSources] = useState<ReadonlySet<string>>(
     () => new Set(),
   )
   const [isAdjusting, setIsAdjusting] = useState(false)
+  const [expandedDomainCode, setExpandedDomainCode] = useState<MqsDomainCode | null>(null)
   const { mediaContainerRef, mediaAllowed, mediaSourceAllowed } = useMediaPlayback<HTMLDivElement>()
   const domainVideoRef = useRef<HTMLVideoElement | null>(null)
   const overallAnchorRef = useRef<DomainData[]>(interactiveSeed)
@@ -444,13 +451,13 @@ export function MqsDashboard({
           className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--mqs-value-inv)]/80 to-transparent"
         />
 
-        <div className="relative border-b border-white/10 pb-3">
+        {audience !== 'coach' && <div className="relative border-b border-white/10 pb-3">
           <p className="w-full max-w-full break-normal text-balance text-center font-sans text-[11px] font-semibold leading-relaxed tracking-[0.04em] text-white/80 min-[390px]:text-xs">
             Introducing The Movement Quality Score
           </p>
-        </div>
+        </div>}
 
-        <div className="relative mx-auto mt-4 grid w-full grid-cols-3 items-center gap-[var(--mqs-core-gap)] px-[var(--mqs-core-gap)] [--mqs-core-gap:clamp(6px,2.2vw,14px)]">
+        <div className="mqs-core relative mx-auto mt-4 grid w-full grid-cols-3 items-center gap-[var(--mqs-core-gap)] px-[var(--mqs-core-gap)] [--mqs-core-gap:clamp(6px,2.2vw,14px)]">
           {domainMediaPanel}
 
           <div className="order-1 flex aspect-square min-w-0 items-center justify-center">
@@ -525,6 +532,7 @@ export function MqsDashboard({
                 )
               })}
               <motion.polygon
+                initial={{ points: radarPolygon }}
                 animate={{ points: radarPolygon }}
                 transition={{
                   duration: reduceMotion || isAdjusting ? 0 : 0.28,
@@ -544,6 +552,7 @@ export function MqsDashboard({
                 return (
                   <motion.circle
                     key={`point-${domain.code}`}
+                    initial={{ cx: point.x, cy: point.y, r: isActive ? 3.1 : 2.15 }}
                     animate={{
                       cx: point.x,
                       cy: point.y,
@@ -662,18 +671,33 @@ export function MqsDashboard({
             const domainColor =
               DOMAIN_COLORS[domainCode] || 'var(--mqs-value-inv)'
             const sliderId = `mqs-domain-${domain.code.toLowerCase()}`
+            const explanation = domainExplanations?.[domainCode]
+            const descriptionId = `${sliderId}-description`
+            const Row = explanation ? 'div' : 'label'
+            const Name = explanation ? 'label' : 'span'
+            const selectDomain = () => {
+              setActiveDomainCode(domainCode)
+              if (explanation) {
+                setActiveMediaDomainCode(domainCode)
+                onDomainSelect?.(domainCode)
+              }
+            }
 
             return (
-              <label
+              <Row
                 key={domain.code}
-                htmlFor={sliderId}
+                {...(!explanation && { htmlFor: sliderId })}
+                data-domain={domainCode}
                 className={`grid min-h-11 min-w-0 grid-cols-[minmax(80px,0.8fr)_minmax(72px,1fr)_auto] items-center gap-2 border-b border-white/[0.065] px-1 transition-colors focus-within:bg-white/[0.035] ${
                   activeDomainCode === domainCode ? 'bg-white/[0.035]' : ''
                 }`}
-                onPointerEnter={() => setActiveDomainCode(domainCode)}
+                onPointerEnter={(event) => {
+                  setActiveDomainCode(domainCode)
+                  if (event.pointerType === 'mouse' && explanation) selectDomain()
+                }}
                 onPointerLeave={() => setActiveDomainCode(null)}
               >
-                <span className="flex min-w-0 items-center gap-2">
+                <span className="mqs-domain-heading flex min-w-0 items-center gap-2">
                   <span
                     aria-hidden="true"
                     className="h-1.5 w-1.5 shrink-0"
@@ -683,7 +707,8 @@ export function MqsDashboard({
                         'polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%)',
                     }}
                   />
-                  <span
+                  <Name
+                    {...(explanation && { htmlFor: sliderId })}
                     className={`break-normal font-sans text-[11px] font-semibold uppercase leading-[1.2] tracking-[0.035em] transition-colors min-[390px]:text-xs ${
                       activeDomainCode === domainCode
                         ? 'text-white/92'
@@ -691,7 +716,23 @@ export function MqsDashboard({
                     }`}
                   >
                     {domainLabel}
-                  </span>
+                  </Name>
+                  {explanation && (
+                    <button
+                      type="button"
+                      className="mqs-domain-info"
+                      aria-label={locale === 'de' ? `${explanation.name} erklären` : `Explain ${explanation.name}`}
+                      aria-expanded={expandedDomainCode === domainCode}
+                      aria-controls={descriptionId}
+                      onFocus={selectDomain}
+                      onClick={() => {
+                        selectDomain()
+                        setExpandedDomainCode((current) => current === domainCode ? null : domainCode)
+                      }}
+                    >
+                      <span aria-hidden="true">i</span>
+                    </button>
+                  )}
                 </span>
                 <input
                   id={sliderId}
@@ -706,14 +747,15 @@ export function MqsDashboard({
                   value={domain.score}
                   onPointerDown={() => {
               setIsAdjusting(true)
-                    setActiveDomainCode(domainCode)
+                    selectDomain()
                     setActiveMediaDomainCode(domainCode)
                   }}
-                  onFocus={() => setActiveDomainCode(domainCode)}
+                  onFocus={selectDomain}
                   onPointerUp={() => setIsAdjusting(false)}
                   onBlur={() => { setActiveDomainCode(null); setIsAdjusting(false) }}
                   onChange={(event) => {
                     setActiveMediaDomainCode(domainCode)
+                    onDomainSelect?.(domainCode)
                     setInteractiveDomainScore(
                       domainCode,
                       Number(event.target.value),
@@ -728,6 +770,7 @@ export function MqsDashboard({
                   }
                   aria-valuetext={`${domain.score}`}
                   data-testid={`mqs-domain-slider-${domain.code.toLowerCase()}`}
+                  aria-describedby={explanation ? descriptionId : undefined}
                 />
                 <output
                   htmlFor={sliderId}
@@ -735,7 +778,12 @@ export function MqsDashboard({
                 >
                   {domain.score}
                 </output>
-              </label>
+                {explanation && (
+                  <p id={descriptionId} className="mqs-domain-description col-span-3" hidden={expandedDomainCode !== domainCode}>
+                    {explanation.description}
+                  </p>
+                )}
+              </Row>
             )
           })}
         </div>

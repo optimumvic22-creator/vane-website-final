@@ -3,6 +3,9 @@
 import { useReducedMotion } from 'framer-motion'
 import type { MotionProps, Transition, Variants } from 'framer-motion'
 
+export const EASE_MQS = [0.22, 1, 0.32, 1] as const
+export const TRANSITION_MQS = { duration: 0.45, ease: EASE_MQS }
+
 /* ── Spring Presets ──────────────────────────────────────────────── */
 
 export const SPRING: Transition = { type: 'spring', stiffness: 400, damping: 30 }

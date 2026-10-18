@@ -1,0 +1,509 @@
+@keyframes coach-tour-progress {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+.coach-landing[data-reduced-motion="true"] *,
+.coach-landing[data-reduced-motion="true"] *::before,
+.coach-landing[data-reduced-motion="true"] *::after {
+  animation-duration: 0s !important;
+  transition-duration: 0s !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .coach-landing *,
+  .coach-landing *::before,
+  .coach-landing *::after {
+    animation-duration: 0s !important;
+    transition-duration: 0s !important;
+  }
+}
+
+/* Approved alternating hero / MQS introduction. Scrubber styles stay shared. */
+.coach-landing .coach-intro-container {
+  max-width: 1344px;
+}
+.coach-hero {
+  scroll-margin-top: 88px;
+  padding: 54px 0 74px;
+  background: #000;
+}
+.coach-hero-grid {
+  display: grid;
+  grid-template-columns: 1.06fr 1fr;
+  gap: 54px;
+  align-items: center;
+}
+.coach-hero-copy { min-width: 0; }
+.coach-hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #a8b1b2;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.7px;
+  line-height: 1.4;
+}
+.coach-hero-eyebrow > span {
+  width: 4px;
+  height: 4px;
+  background: #a4c8c0;
+  flex-shrink: 0;
+}
+.coach-hero h1 {
+  font-family: var(--font-display-runtime), 'Bebas Neue', sans-serif;
+  font-size: clamp(60px, 5.2vw, 76px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0;
+  margin-top: 20px;
+}
+.coach-hero-intro {
+  color: #a7afb1;
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 51ch;
+  margin-top: 24px;
+}
+.coach-hero-intro strong { font-weight: 550; color: #d9e1df; }
+.coach-hero-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 28px;
+}
+.coach-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  gap: 12px;
+  padding: 0 23px;
+  border: 1px solid #ffffff30;
+  border-radius: 40px;
+  font-size: 12px;
+  font-weight: 550;
+}
+.coach-hero-cta-primary {
+  min-height: 60px;
+  gap: 28px;
+  padding: 0 29px;
+  font-size: 14px;
+  color: #090b0b;
+  background: #f0f2f2;
+}
+.coach-hero-cta-secondary { color: #ddd; }
+.coach-hero-cta:hover { filter: brightness(.9); }
+.coach-hero-photo {
+  position: relative;
+  min-width: 0;
+  height: 460px;
+  overflow: hidden;
+  border: 1px solid #ffffff20;
+  border-radius: 7px;
+  background: #101313;
+}
+.coach-hero-photo > img { object-fit: cover; object-position: 50% 41%; }
+.coach-hero-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 43%, #000d 100%);
+}
+.coach-research-caption {
+  position: absolute;
+  bottom: 24px;
+  left: 26px;
+  right: 26px;
+  z-index: 1;
+}
+.coach-research-year {
+  display: block;
+  font-family: var(--font-data-runtime), 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: .08em;
+  color: #d9e7e3;
+  margin-bottom: 8px;
+}
+.coach-research-caption > p {
+  font-family: var(--font-display-runtime), 'Bebas Neue', sans-serif;
+  font-size: 29px;
+  line-height: 1.1;
+  letter-spacing: .3px;
+}
+.coach-research-description {
+  display: block;
+  max-width: 46ch;
+  color: #d2d9d8;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-top: 8px;
+}
+.coach-hero-motion { position: absolute; top: 12px; right: 12px; z-index: 2; }
+.coach-hero-motion > button {
+  margin: 0;
+  min-height: 36px;
+  width: 36px;
+  justify-content: center;
+  gap: 0;
+  font-size: 0;
+  border: 1px solid #ffffff30;
+  border-radius: 50%;
+  background: #0008;
+  color: #fff;
+}
+.coach-hero-motion svg { width: 15px; height: 15px; }
+.coach-score-section {
+  scroll-margin-top: 88px;
+  padding: 56px 0 40px;
+  background: #000;
+}
+.coach-score-grid {
+  display: grid;
+  grid-template-columns: 1.12fr .88fr;
+  gap: 62px;
+  align-items: center;
+}
+.coach-score-copy { min-width: 0; }
+.coach-score-copy h2 {
+  font-family: var(--font-display-runtime), 'Bebas Neue', sans-serif;
+  font-size: 54px;
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: .1px;
+}
+.coach-score-subtitle {
+  font-size: 15px;
+  line-height: 1.65;
+  color: #a2aeb0;
+  max-width: 39ch;
+  margin-top: 18px;
+}
+.coach-domain-explanation {
+  border-left: 2px solid;
+  padding-left: 18px;
+  min-height: 113px;
+  margin-top: 32px;
+}
+.coach-domain-explanation h3 {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -.2px;
+  margin-bottom: 10px;
+}
+.coach-domain-explanation p {
+  font-size: 15px;
+  line-height: 1.65;
+  color: #b5bfc0;
+  max-width: 37ch;
+}
+.coach-score-panel { order: -1; min-width: 0; }
+.coach-score-panel .mqs-core { margin-top: 0; }
+.mqs-domain-info {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  margin-left: auto;
+  border: 1px solid #ffffff40;
+  border-radius: 50%;
+  font-family: Georgia, serif;
+  font-size: 10px;
+  font-style: italic;
+  color: #ffffff8c;
+  cursor: pointer;
+}
+.mqs-domain-info::before { content: ''; position: absolute; inset: -8px; }
+.mqs-domain-info[aria-expanded="true"] { border-color: currentColor; color: #81d8cf; }
+.mqs-domain-description { padding: 0 4px 12px; color: #b5c1c2; font-size: 12px; line-height: 1.65; }
+@media (min-width: 761px) {
+  .coach-score-panel .mqs-domain-description {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+@media (min-width: 761px) and (max-width: 1100px) {
+  .coach-hero-grid { grid-template-columns: 1.15fr 1fr; gap: 30px; }
+  .coach-hero h1 { font-size: 58px; }
+  .coach-hero-intro { font-size: 14px; }
+  .coach-hero-photo { height: 470px; }
+  .coach-research-caption { left: 20px; right: 20px; }
+  .coach-research-caption > p { font-size: 25px; }
+  .coach-research-description { font-size: 11px; }
+  .coach-score-grid { gap: 32px; }
+  .coach-score-copy h2 { font-size: 44px; }
+  .coach-score-subtitle, .coach-domain-explanation p { font-size: 14px; }
+  .coach-hero-cta-primary { gap: 16px; padding-inline: 23px; }
+}
+@media (max-width: 760px) {
+  .coach-hero { padding: 35px 0 44px; }
+  .coach-hero-grid { grid-template-columns: 1fr; gap: 28px; }
+  .coach-hero h1 { font-size: clamp(48px, 12.8vw, 66px); margin-top: 17px; line-height: 1.02; }
+  .coach-hero-eyebrow { font-size: 9px; letter-spacing: 1.2px; }
+  .coach-hero-intro { font-size: 14px; line-height: 1.7; max-width: 48ch; margin-top: 20px; }
+  .coach-hero-actions { gap: 10px; margin-top: 23px; }
+  .coach-hero-cta { padding-inline: 20px; font-size: 11px; gap: 12px; }
+  .coach-hero-cta-primary { min-height: 56px; font-size: 13px; gap: 16px; padding-inline: 22px; }
+  .coach-hero-photo { height: 320px; }
+  .coach-research-caption { left: 20px; right: 20px; bottom: 18px; }
+  .coach-research-year { font-size: 11px; }
+  .coach-research-caption > p { font-size: 25px; }
+  .coach-research-description { font-size: 11px; max-width: 44ch; }
+  .coach-score-section { padding: 44px 0 32px; }
+  .coach-score-grid { display: flex; flex-direction: column; gap: 24px; align-items: stretch; }
+  .coach-score-panel { order: 0; }
+  .coach-score-copy h2 { font-size: 40px; line-height: 1.04; }
+  .coach-score-subtitle { font-size: 14px; line-height: 1.6; margin-top: 15px; }
+  .coach-domain-explanation { display: none; }
+  .coach-score-panel .mqs-core { grid-template-columns: .65fr 1fr 1fr; gap: 8px; padding: 0; }
+  .coach-score-panel .mqs-domain-heading { gap: 6px; }
+}
+@media (max-width: 389px) {
+  .coach-hero-cta-secondary { padding-inline: 14px; }
+}
+
+.coach-interpretation {
+  scroll-margin-top: 104px;
+  padding: 96px 0 72px;
+  background: #000;
+}
+.coach-interpretation-grid {
+  display: grid;
+  grid-template-columns: 1fr .9fr;
+  align-items: start;
+  gap: 72px;
+}
+.coach-interpretation-copy,
+.coach-interpretation-perspective { min-width: 0; }
+.coach-interpretation h2,
+.coach-faq h2 {
+  font-family: var(--font-display-runtime), 'Bebas Neue', sans-serif;
+  font-size: clamp(48px, 5vw, 64px);
+  font-weight: 400;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.coach-interpretation h2 { max-width: 15ch; }
+.coach-interpretation-body {
+  display: grid;
+  gap: 24px;
+  margin-top: 32px;
+  padding-left: 24px;
+  border-left: 1px solid #a4c8c061;
+  color: #aeb6b7;
+  font-size: 16px;
+  line-height: 1.8;
+}
+.coach-interpretation-perspective {
+  overflow: hidden;
+  border: 1px solid #ffffff1f;
+  border-radius: 12px;
+  background: #0b0e0f;
+}
+.coach-interpretation-photo {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-bottom: 1px solid #ffffff1f;
+}
+.coach-interpretation-photo-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, #08090a59, transparent 55%, #0000001a);
+}
+.coach-interpretation-decision { padding: 30px 32px 34px; }
+.coach-interpretation-decision h3 {
+  color: #a4c8c0;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 1.2px;
+}
+.coach-interpretation-decision p {
+  margin-top: 14px;
+  color: #e0e6e5;
+  font-size: 18px;
+  line-height: 1.6;
+}
+.coach-interpretation-note {
+  margin-top: 40px;
+  color: #ffffff80;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.coach-faq {
+  scroll-margin-top: 104px;
+  padding: 96px 0;
+  border-top: 1px solid #ffffff14;
+  background: #000;
+}
+.coach-faq-grid {
+  display: grid;
+  grid-template-columns: .65fr 1.35fr;
+  align-items: start;
+  gap: 80px;
+}
+.coach-faq-heading { min-width: 0; }
+.coach-faq h2 { margin-top: 20px; }
+.coach-faq-heading > p {
+  max-width: 27ch;
+  margin-top: 22px;
+  color: #aeb6b7;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.coach-faq-list { min-width: 0; border-top: 1px solid #ffffff26; }
+.coach-faq-list [data-slot="accordion-item"] { border-color: #ffffff26; }
+.coach-faq-trigger {
+  min-height: 72px;
+  gap: 24px;
+  padding: 22px 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.coach-faq-trigger:focus-visible {
+  outline: 2px solid #a4c8c0;
+  outline-offset: 6px;
+  border-radius: 2px;
+}
+.coach-faq-answer {
+  padding: 0 32px 24px 0;
+  color: #aeb6b7;
+  font-size: 15px;
+  line-height: 1.8;
+}
+@media (max-width: 1023px) {
+  .coach-interpretation-grid { gap: 36px; }
+  .coach-faq-grid { grid-template-columns: .7fr 1.3fr; gap: 40px; }
+  .coach-interpretation-decision { padding: 24px; }
+}
+@media (max-width: 760px) {
+  .coach-interpretation,
+  .coach-faq { scroll-margin-top: 88px; padding: 56px 0; }
+  .coach-interpretation-grid,
+  .coach-faq-grid { grid-template-columns: 1fr; gap: 32px; }
+  .coach-interpretation h2,
+  .coach-faq h2 { font-size: 48px; }
+  .coach-interpretation-body { margin-top: 24px; padding-left: 18px; font-size: 15px; }
+  .coach-interpretation-decision p { font-size: 17px; }
+  .coach-interpretation-note { margin-top: 24px; }
+  .coach-faq-heading > p { max-width: none; margin-top: 16px; }
+  .coach-faq-trigger { font-size: 15px; }
+}
+
+.coach-report {
+  padding: 18px;
+  border: 1px solid #ffffff26;
+  border-radius: 12px;
+  background: #0b0c0ef2;
+}
+.coach-report-label {
+  margin-bottom: 16px;
+  color: #ffffffb3;
+  font-family: monospace;
+  font-size: 11px;
+  letter-spacing: 1.4px;
+}
+.coach-report-preview {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #ffffff1a;
+  border-radius: 8px;
+  background: #131313;
+  cursor: zoom-in;
+}
+.coach-report-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 640px;
+  margin-inline: auto;
+}
+.coach-report-expand {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ffffff26;
+  border-radius: 50%;
+  background: #000000b3;
+  color: white;
+}
+.coach-report-preview:hover .coach-report-expand { background: #000000e6; }
+.coach-report-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+.coach-report-controls button {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ffffff26;
+  border-radius: 50%;
+  color: #e0e6e5;
+}
+.coach-report-controls button:hover { background: #ffffff0d; }
+.coach-report-position { color: #b1b9ba; font-size: 12px; text-align: center; }
+.coach-report-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+.coach-report-tabs button {
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 4px;
+  border-bottom: 2px solid #ffffff26;
+  color: #ffffff99;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.coach-report-tabs button span { margin-right: 6px; font-family: monospace; font-size: 10px; }
+.coach-report-tabs button[aria-selected="true"] { border-color: #a4c8c0; color: #e0e6e5; }
+.coach-report-disclaimer {
+  margin-top: 16px;
+  color: #ffffff99;
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: center;
+}
+.coach-report button:focus-visible {
+  outline: 2px solid #a4c8c0;
+  outline-offset: 4px;
+}
+@media (max-width: 760px) {
+  .coach-report { padding: 12px; }
+  .coach-report-tabs { gap: 4px; }
+  .coach-report-tabs button { font-size: 11px; }
+  .coach-report-tabs button span { display: block; margin-right: 0; }
+}

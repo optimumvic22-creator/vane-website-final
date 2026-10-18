@@ -1,0 +1,4 @@
+{
+  "buildCommand": "npm run build -- --webpack",
+  "installCommand": "npx --yes npm@11.9.0 ci --no-fund"
+}

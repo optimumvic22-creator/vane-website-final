@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SPRING_SLOW } from '@/lib/motion'
 import { useLocale } from '@/lib/locale'
@@ -10,6 +11,7 @@ import {
   getConsent,
   setConsent,
   loadAnalytics,
+  trackPageView,
   syncConsentFromStorage,
   type ConsentValue,
 } from '@/lib/analytics'
@@ -18,6 +20,11 @@ import { Button } from '@/components/ui/button'
 export function CookieBanner() {
   const [visible, setVisible] = useState(false)
   const { locale } = useLocale()
+  const pathname = usePathname()
+
+  useEffect(() => {
+    trackPageView()
+  }, [pathname])
 
   useEffect(() => {
     // Consent lives in localStorage, so it can only be read after mount.
@@ -63,8 +70,8 @@ export function CookieBanner() {
           <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 md:flex-row md:justify-between">
             <p className="text-sm text-muted-foreground">
               {locale === 'de'
-                ? 'Wir verwenden technisch notwendige Cookies. Mit deiner Zustimmung nutzen wir zusätzlich anonymisierte Analytics, um die Seite zu verbessern. Keine Werbung, kein Datenverkauf.'
-                : 'We use technically necessary cookies. With your consent, we also use anonymized analytics to improve the site. No ads, no selling data.'}
+                ? 'Wir verwenden notwendige Cookies. Mit deiner Zustimmung misst Google Analytics Besuche und Interaktionen, um die Website zu verbessern. Dabei können Daten in die USA übertragen werden. Keine Werbung. Jederzeit in den Cookie Einstellungen widerrufbar.'
+                : 'We use necessary cookies. With your consent, Google Analytics measures visits and interactions to improve the website. Data may be transferred to the US. No advertising. Withdraw anytime in Cookie settings.'}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Link href="/privacy" className="text-sm text-muted-foreground underline hover:text-foreground">
@@ -73,8 +80,8 @@ export function CookieBanner() {
               <Button size="sm" variant="outline" onClick={() => handleConsent('essential')}>
                 {locale === 'de' ? 'Nur essenziell' : 'Essential only'}
               </Button>
-              <Button size="sm" onClick={() => handleConsent('all')}>
-                {locale === 'de' ? 'Alle akzeptieren' : 'Accept all'}
+              <Button size="sm" variant="outline" onClick={() => handleConsent('all')}>
+                {locale === 'de' ? 'Analytics erlauben' : 'Allow analytics'}
               </Button>
             </div>
           </div>

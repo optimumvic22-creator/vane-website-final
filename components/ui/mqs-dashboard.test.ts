@@ -36,7 +36,7 @@ vi.mock('@/lib/use-media-playback', () => ({
   }),
 }))
 
-import { MqsDashboard } from './mqs-dashboard'
+import { MqsDashboard, type MqsDashboardProps } from './mqs-dashboard'
 
 type Element = ReactElement<Record<string, unknown>>
 
@@ -51,10 +51,11 @@ function render(
   variant: 'audience' | 'standalone' = 'audience',
   locale: 'en' | 'de' = 'en',
   audience: 'athlete' | 'coach' | 'partner' = 'athlete',
+  extra: Pick<MqsDashboardProps, 'domainExplanations' | 'onDomainSelect'> = {},
 ) {
   state.hookIndex = 0
   state.effects = []
-  return descendants(MqsDashboard({ variant, locale, audience }))
+  return descendants(MqsDashboard({ variant, locale, audience, ...extra }))
 }
 
 function video() {
@@ -72,12 +73,13 @@ beforeEach(() => {
 })
 
 describe.each(['athlete', 'coach', 'partner'] as const)('MQS introduction for %s', (audience) => {
-  it.each(['en', 'de'] as const)('uses one full-width centered header in %s', (locale) => {
+  it.each(['en', 'de'] as const)('keeps the introduction outside the coach hero in %s', (locale) => {
     const elements = render('audience', locale, audience)
     const headers = elements.filter((element) =>
       element.type === 'p' && element.props.children === 'Introducing The Movement Quality Score',
     )
-    expect(headers).toHaveLength(1)
+    expect(headers).toHaveLength(audience === 'coach' ? 0 : 1)
+    if (audience === 'coach') return
     expect(headers[0].props.className).toContain('w-full')
     expect(headers[0].props.className).toContain('text-center')
     expect(headers[0].props.className).toContain('break-normal')
@@ -91,7 +93,7 @@ describe.each(['athlete', 'coach', 'partner'] as const)('MQS introduction for %s
 describe('MQS media initialization and motion', () => {
   it('shows the fallback poster without loading Power before random selection', () => {
     const element = video()
-    expect(element.props.poster).toContain('power-dario-keiser-push-pull-poster.jpg')
+    expect(element.props.poster).toContain('power-2026-10-14-poster.jpg')
     expect(element.props.src).toBeUndefined()
     const nativeVideo = { pause: vi.fn(), load: vi.fn(), play: vi.fn() }
     ;(element.props.ref as { current: unknown }).current = nativeVideo
@@ -159,5 +161,28 @@ describe('MQS media initialization and motion', () => {
     expect(shapes.length).toBeGreaterThan(0)
     expect(shapes.every((element) => (element.props.transition as { duration: number; delay?: number }).duration === 0)).toBe(true)
     expect(shapes.every((element) => !(element.props.transition as { delay?: number }).delay)).toBe(true)
+  })
+})
+
+describe('optional coach domain explanations', () => {
+  it('associates the explanation with the range and supports keyboard focus and tapping', () => {
+    const onDomainSelect = vi.fn()
+    const elements = render('audience', 'en', 'coach', {
+      domainExplanations: { POST: { name: 'Postural control', description: 'Control your trunk and spine in movement.' } },
+      onDomainSelect,
+    })
+    const button = elements.find(e => e.props['aria-label'] === 'Explain Postural control')!
+    const range = elements.find(e => e.props.id === 'mqs-domain-post')!
+    const description = elements.find(e => e.props.id === button.props['aria-controls'])!
+    expect(range.props['aria-describedby']).toBe(description.props.id)
+    expect(description.props.children).toContain('trunk and spine')
+    ;(button.props.onFocus as () => void)()
+    ;(button.props.onClick as () => void)()
+    expect(onDomainSelect).toHaveBeenCalledWith('POST')
+  })
+  it.each(['athlete', 'partner'] as const)('keeps the original controls for %s', audience => {
+    const elements = render('audience', 'en', audience)
+    expect(elements.some(e => e.props.className === 'mqs-domain-info')).toBe(false)
+    expect(elements.filter(e => e.props.type === 'range')).toHaveLength(8)
   })
 })

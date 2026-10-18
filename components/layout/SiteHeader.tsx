@@ -26,9 +26,11 @@ const audienceNav: Record<AudienceSlug, NavLink[]> = {
     { href: '#results', labelEn: 'Your report', labelDe: 'Dein Bericht' },
   ],
   coach: [
-    { href: '#benefits', labelEn: 'Why it helps', labelDe: 'Warum es hilft' },
-    { href: '#how-it-works', labelEn: 'Team assessment', labelDe: 'Team Assessment' },
-    { href: '#results', labelEn: 'Staff report', labelDe: 'Teamreport' },
+    { href: '#tour', labelEn: 'Product tour', labelDe: 'Produkttour' },
+    { href: '#score', labelEn: 'The Score', labelDe: 'Der Score' },
+    { href: '#normvault', labelEn: 'NormVault', labelDe: 'NormVault' },
+    { href: '#benefits', labelEn: 'Your setup', labelDe: 'Dein Setup' },
+    { href: '#results', labelEn: 'AI report', labelDe: 'KI-Bericht' },
   ],
   partner: [
     { href: '#mqs-setup', labelEn: 'What we bring', labelDe: 'Was wir mitbringen' },
@@ -81,7 +83,7 @@ export function SiteHeader() {
       setMobileOpen(false)
       menuButtonRef.current?.focus()
     }
-    const desktop = window.matchMedia(activeAudience === 'partner' ? '(min-width: 1280px)' : '(min-width: 1024px)')
+    const desktop = window.matchMedia((activeAudience === 'partner' || activeAudience === 'coach') ? '(min-width: 1280px)' : '(min-width: 1024px)')
     const closeOnDesktop = (event: MediaQueryListEvent) => {
       if (!event.matches) return
 
@@ -177,7 +179,7 @@ export function SiteHeader() {
         <nav
           ref={desktopNavRef}
           aria-label={locale === 'de' ? 'Hauptnavigation' : 'Main navigation'}
-          className={cn('hidden items-center gap-5 xl:gap-8', activeAudience === 'partner' ? 'xl:flex' : 'lg:flex')}
+          className={cn('hidden items-center gap-5 xl:gap-8', (activeAudience === 'partner' || activeAudience === 'coach') ? 'xl:flex' : 'lg:flex')}
         >
           {navLinks.map((link) => (
             <Link
@@ -203,7 +205,7 @@ export function SiteHeader() {
           </Link>
         </nav>
 
-        <div className={cn('flex items-center gap-1', activeAudience === 'partner' ? 'xl:hidden' : 'lg:hidden')}>
+        <div className={cn('flex items-center gap-1', (activeAudience === 'partner' || activeAudience === 'coach') ? 'xl:hidden' : 'lg:hidden')}>
           <button
             ref={menuButtonRef}
             type="button"
@@ -226,7 +228,7 @@ export function SiteHeader() {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={FADE}
-          className={cn('max-h-[calc(100dvh-76px-env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain border-b border-border/10 bg-background', activeAudience === 'partner' ? 'xl:hidden' : 'lg:hidden')}
+          className={cn('max-h-[calc(100dvh-76px-env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain border-b border-border/10 bg-background', (activeAudience === 'partner' || activeAudience === 'coach') ? 'xl:hidden' : 'lg:hidden')}
         >
           <div className="flex flex-col px-5 py-5">
             {navLinks.map((link) => (

@@ -110,6 +110,26 @@ export function syncConsentFromStorage(
 }
 
 let loaded = false
+let lastPageLocation: string | undefined
+
+/** Keep campaign attribution, but never forward arbitrary query strings or fragments. */
+export function analyticsUrl(value: string, includeCampaign = false): string {
+  try {
+    const url = new URL(value)
+    if (!['https:', 'http:'].includes(url.protocol)) return ''
+    const clean = new URL(url.origin + url.pathname)
+    if (includeCampaign) {
+      for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'utm_id', 'lang']) {
+        const value = url.searchParams.get(key)
+        // Campaign labels should be short, non-personal slugs, never emails.
+        if (value && /^[a-zA-Z0-9_-]{1,100}$/.test(value)) clean.searchParams.set(key, value)
+      }
+    }
+    return clean.href
+  } catch {
+    return ''
+  }
+}
 
 function setAnalyticsDisabled(disabled: boolean) {
   if (!GA_ID || typeof window === 'undefined') return
@@ -143,6 +163,7 @@ function removeAnalyticsCookies() {
 export function revokeAnalytics() {
   if (typeof window === 'undefined') return
   setAnalyticsDisabled(true)
+  lastPageLocation = undefined
   try {
     removeAnalyticsCookies()
   } catch {
@@ -155,20 +176,59 @@ export function loadAnalytics() {
   if (typeof window === 'undefined') return
   if (!GA_ID || !hasAnalyticsConsent()) return
   setAnalyticsDisabled(false)
-  if (loaded) return
+  if (loaded) {
+    trackPageView()
+    return
+  }
   loaded = true
 
   window.dataLayer = window.dataLayer || []
-  window.gtag = function gtag(...args: unknown[]) {
-    window.dataLayer?.push(args)
+  window.gtag = function gtag() {
+    // Google processes Arguments objects as commands; plain arrays are not equivalent.
+    // eslint-disable-next-line prefer-rest-params
+    window.dataLayer?.push(arguments)
   }
+  window.gtag('consent', 'default', {
+    analytics_storage: 'granted',
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+  })
+  window.gtag('set', 'ads_data_redaction', true)
+  window.gtag('set', {
+    page_location: analyticsUrl(window.location.href, true),
+    page_referrer: analyticsUrl(document.referrer),
+  })
   window.gtag('js', new Date())
-  window.gtag('config', GA_ID, { anonymize_ip: true })
+  window.gtag('config', GA_ID, {
+    send_page_view: false,
+    allow_google_signals: false,
+    allow_ad_personalization_signals: false,
+    cookie_expires: 60 * 60 * 24 * 180,
+    cookie_update: false,
+  })
+  trackPageView()
 
   const script = document.createElement('script')
   script.async = true
   script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`
   document.head.appendChild(script)
+}
+
+/** One page view per route, including client-side navigation and consent on that route. */
+export function trackPageView() {
+  if (!GA_ID || typeof window === 'undefined' || !hasAnalyticsConsent() || !window.gtag) return
+  if (window.location.pathname?.startsWith('/studio')) return
+  const pageLocation = analyticsUrl(window.location.href, true)
+  if (!pageLocation || pageLocation === lastPageLocation) return
+  const pageReferrer = lastPageLocation || analyticsUrl(document.referrer)
+  lastPageLocation = pageLocation
+  window.gtag('set', { page_location: pageLocation, page_referrer: pageReferrer })
+  trackEvent('page_view', {
+    page_location: pageLocation,
+    page_referrer: pageReferrer,
+    page_title: document.title,
+  })
 }
 
 /** Fire a GA4 event. No-op without consent or measurement ID. */

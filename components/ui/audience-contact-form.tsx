@@ -88,7 +88,22 @@ export function AudienceContactForm({
     <div ref={containerRef} onFocusCapture={() => setActive(true)}>
       {active ? (
         audience === 'athlete'
-          ? <InquiryForm audience={audience} locale={locale} cta={cta} note={note} />
+          ? <>
+              <InquiryForm audience={audience} locale={locale} cta={cta} note={note} />
+              <section aria-labelledby="athlete-waitlist-heading" className="mx-auto mt-12 max-w-2xl border-t border-white/12 pt-10">
+                <h3 id="athlete-waitlist-heading" className="text-2xl font-medium text-foreground">
+                  {locale === 'de' ? 'Auf die Athleten-Warteliste' : 'Join the athlete waitlist'}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
+                  {locale === 'de'
+                    ? 'Du möchtest über MQS informiert bleiben? Melde dich unabhängig von einer Assessment-Anfrage an. Du erhältst direkt eine Willkommens-E-Mail von Marko und Dario.'
+                    : 'Want to stay connected with MQS? Join separately from an assessment request and receive a welcome email from Marko and Dario right away.'}
+                </p>
+                <WaitlistForm audience="athlete" locale={locale}
+                  cta={locale === 'de' ? 'Auf die Athleten-Warteliste' : 'Join the athlete waitlist'}
+                  note={locale === 'de' ? 'Diese Anmeldung ist keine Assessment-Buchung.' : 'Joining this waitlist does not book an assessment.'} />
+              </section>
+            </>
           : <WaitlistForm audience={audience} locale={locale} cta={cta} note={note} />
       ) : (
         <FormLoading />

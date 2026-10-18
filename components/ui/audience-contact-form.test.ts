@@ -104,12 +104,14 @@ describe('demand-loaded audience forms', () => {
     expect(html).toContain('mailto:mqs@vanescience.com')
   })
 
-  it('loads only the inquiry form after athlete intent', async () => {
+  it('keeps the assessment inquiry and athlete waitlist as separate forms', async () => {
     state.active = true
     const html = await render()
     expect(html).toContain('data-form="inquiry"')
-    expect(html).not.toContain('data-form="waitlist"')
-    expect(state.loadBoundary).toHaveBeenCalledOnce()
+    expect(html).toContain('data-form="waitlist" data-audience="athlete"')
+    expect(html).toContain('Join the athlete waitlist')
+    expect(html).toContain('receive a welcome email')
+    expect(state.loadBoundary).toHaveBeenCalledTimes(2)
   })
 
   it.each(['coach', 'partner'] as const)('renders the waitlist with current %s and locale props', async (audience) => {

@@ -6,6 +6,8 @@ import {
   audienceSlugs,
   isAudienceSlug,
 } from '@/lib/audience-content'
+import { CoachLanding } from './coach-landing'
+import { coachCompactCopy } from '@/lib/coach-compact'
 import { AudienceLanding } from './audience-landing'
 
 type AudiencePageProps = {
@@ -31,7 +33,7 @@ export async function generateMetadata({ params }: AudiencePageProps): Promise<M
 
   return {
     title: `VANE for ${audienceTitles[audience]}`,
-    description: copy.intro,
+    description: audience === 'coach' ? coachCompactCopy.en.intro : copy.intro,
     alternates: {
       canonical: `/for/${audience}`,
       languages: { 'x-default': `/for/${audience}` },
@@ -46,7 +48,7 @@ export default async function AudiencePage({ params }: AudiencePageProps) {
   return (
     <>
       <StructuredData audience={audience} />
-      <AudienceLanding audience={audience} />
+      {audience === 'coach' ? <CoachLanding /> : <AudienceLanding audience={audience} />}
     </>
   )
 }

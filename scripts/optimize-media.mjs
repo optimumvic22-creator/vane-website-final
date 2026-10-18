@@ -12,8 +12,8 @@ const sources = [
   'mqs-domains/gait-colin-side-view',
   'mqs-domains/posture-img-7757',
   'mqs-domains/force-dario-tb-deadlift',
-  'mqs-domains/power-dario-keiser-push-pull',
-  'mqs-domains/motor-img-6130',
+  'mqs-domains/power-2026-10-14',
+  'mqs-domains/motor-control-framed-2026-10-14',
   'mqs-domains/neuro-julius-single-leg-line-hop',
   'mqs-domains/dtc-colin-crossover-step',
   'audience-motion/partner-niklas-cmj-2',
@@ -65,11 +65,16 @@ for (const source of sources) {
   }
   if (!after || !isValid(after)) {
     const temporary = output.replace(/\.mp4$/, '.partial.mp4')
+    // Follow the drop from the box into the landing, keeping the athlete fully
+    // visible in the square player without adding side bars.
+    const domainCrop = source === 'mqs-domains/motor-control-framed-2026-10-14'
+      ? "crop=1080:1080:0:'170+230*(3*pow(clip((t-0.30)/0.45,0,1),2)-2*pow(clip((t-0.30)/0.45,0,1),3))',"
+      : ''
     run(ffmpeg, [
       '-hide_banner', '-loglevel', 'error', '-nostdin', '-y', '-threads', '2', '-i', input,
       '-map', '0:v:0', '-an', '-sn', '-dn',
       '-t', before.format.duration, '-filter_threads', '1',
-      '-vf', "fps=30,scale=w='min(1280,iw)':h='min(1280,ih)':force_original_aspect_ratio=decrease:force_divisible_by=2,setsar=1",
+      '-vf', domainCrop + "fps=30,scale=w='min(1280,iw)':h='min(1280,ih)':force_original_aspect_ratio=decrease:force_divisible_by=2,setsar=1",
       '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23', '-threads', '2',
       '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-map_metadata', '-1', temporary,
     ])

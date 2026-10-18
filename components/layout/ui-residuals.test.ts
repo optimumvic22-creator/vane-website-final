@@ -209,12 +209,23 @@ describe('mobile menu breakpoint focus', () => {
     expect(ids).toEqual(['mqs-setup', 'partner-support', 'data-partnership', 'results'])
   })
 
-  it('preserves the existing Coach desktop breakpoint', () => {
-    expect(headerHarness().mediaQuery).toBe('(min-width: 1024px)')
+  it('gives the five coach links enough room at the desktop breakpoint', () => {
+    const nav = descendants(SiteHeader()).find(element => element.props['aria-label'] === 'Main navigation')
+    expect(((nav?.props.children as Element[][])[0]).map(element => element.props.href)).toEqual(['#tour', '#score', '#normvault', '#benefits', '#results'])
+    state.hookIndex = 0
+    state.effects = []
+    expect(headerHarness().mediaQuery).toBe('(min-width: 1280px)')
   })
 })
 
 describe('readable loading feedback', () => {
+  it('keeps the footer below the viewport while the coach page streams in', () => {
+    state.view = 'loading'
+    state.pathname = '/for/coach'
+    expect(Loading().props.className).toContain('min-h-[calc(100svh-4rem)]')
+    state.pathname = '/for/athlete'
+    expect(Loading().props.className).toContain('min-h-[60vh]')
+  })
   it.each([
     ['en', 'Loading content'],
     ['de', 'Inhalt wird geladen'],

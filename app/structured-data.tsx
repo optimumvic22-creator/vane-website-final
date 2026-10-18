@@ -1,3 +1,4 @@
+import { coachCompactCopy } from '@/lib/coach-compact'
 import {
   audienceContent,
   type AudienceSlug,
@@ -54,7 +55,7 @@ export function StructuredData({ audience }: StructuredDataProps) {
         '@id': pageId,
         url: pageUrl,
         name: details.pageName,
-        description: copy.intro,
+        description: audience === 'coach' ? coachCompactCopy.en.intro : copy.intro,
         inLanguage: 'en',
         isPartOf: {
           '@id': `${siteUrl}/#website`,
@@ -69,7 +70,7 @@ export function StructuredData({ audience }: StructuredDataProps) {
         url: pageUrl,
         name: details.serviceName,
         serviceType: details.serviceType,
-        description: copy.intro,
+        description: audience === 'coach' ? coachCompactCopy.en.intro : copy.intro,
         provider: {
           '@id': `${siteUrl}/#organization`,
         },
