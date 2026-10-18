@@ -148,7 +148,7 @@ export function SiteHeader() {
       className={cn(
         'fixed left-1/2 z-50 -translate-x-1/2 transition-[background-color,border-color,box-shadow,border-radius] duration-200',
         scrolled
-          ? 'top-3 w-[calc(100%-2rem)] max-w-[1240px] rounded-xl border border-border/10 bg-background shadow-elevation-2'
+          ? 'top-0 w-full max-w-none border-b border-border/10 bg-background shadow-elevation-2'
           : 'top-0 w-full max-w-none bg-transparent',
       )}
     >
@@ -156,7 +156,7 @@ export function SiteHeader() {
         className={cn(
           'mx-auto flex items-center justify-between',
           scrolled
-            ? 'h-12 w-full px-1 md:px-4'
+            ? 'h-12 w-full max-w-[1240px] px-5 md:px-8'
             : 'h-16 max-w-[1600px] px-5 md:px-8',
         )}
       >

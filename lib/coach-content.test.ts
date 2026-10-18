@@ -34,7 +34,7 @@ describe('approved coach landing copy', () => {
     expect(JSON.stringify(coachContent)).not.toMatch(/still in development|coming soon|plan to build|noch in Entwicklung|bald verfügbar/i)
     expect(coachContent.en.ui.prototype).toBe('Preliminary prototype shown. Not the finished software.')
     expect(coachContent.de.ui.prototype).toBe('Vorläufiger Prototyp. Nicht die fertige Software.')
-    expect(coachCompactCopy.en.headline).toBe('SEE THE MOVEMENT. UNDERSTAND THE WHY.')
+    expect(coachCompactCopy.en.headline).toBe('Your phone is all you need to start understanding movement.')
     expect(coachCompactCopy.en.finalText).toContain('Join the waitlist')
   })
   it.each(['en', 'de'] as const)('renders domains in the binding web-contract order in %s', locale => {

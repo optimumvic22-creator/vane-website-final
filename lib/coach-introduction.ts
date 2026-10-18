@@ -16,8 +16,8 @@ type CoachIntroduction = {
 
 export const coachIntroduction: Record<Locale, CoachIntroduction> = {
   en: {
-    headline: ['SEE THE MOVEMENT.', 'UNDERSTAND THE WHY.'],
-    intro: 'Start with the equipment and experience you have. MQS brings motion capture and force plate data into one standardized movement assessment, then turns the results into an AI-powered needs analysis backed by NormVault, our growing reference database. Clear training priorities. Less time interpreting results. More time with your athletes.',
+    headline: ['Your phone is all you need', 'to start understanding movement.'],
+    intro: 'With a second pair of eyes alongside you, every analysis builds your understanding of what to train and why - starting simple & expanding your setup as you grow. One unified assessment gives movement quality a shared score. The engine behind it: NormVault, our growing reference database with lab-quality reference data - built by you and us.',
     setupCta: 'Check your setup',
     researchTitle: 'MOVEMENT RESEARCH.',
     researchDescription: 'Motion capture and 3D force plate assessments using early machine-learning algorithms.',
