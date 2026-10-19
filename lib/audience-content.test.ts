@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { audienceContent, audienceSlugs } from './audience-content'
+import { coachContent } from './coach-content'
+import { coachCompactCopy } from './coach-compact'
 import { WAITLIST_UPDATES_CONSENT_VERSION, waitlistUpdatesConsent } from './waitlist-consent'
 
 // Captured from the current source before the approved September 24 copy edits.
@@ -78,14 +80,12 @@ describe('approved audience copy contract', () => {
     expect(publicCopy).not.toMatch(/MQS Vault|Pilotieren|[\u2013\u2014]/)
   })
 
-  it('keeps coach access in development and distinct from the available athlete assessment', () => {
-    const { en, de } = audienceContent.coach
-    expect(en.availabilityNote).toBe('MQS access for coaches and teams is still in development.')
-    expect(de.availabilityNote).toBe('Der MQS Zugang für Coaches und Teams ist noch in Entwicklung.')
-    expect(en.finalText).toContain(en.availabilityNote)
-    expect(de.finalText).toContain(de.availabilityNote)
-    expect(en.processEyebrow).toMatch(/planned|plan to/i)
-    expect(de.processEyebrow).toMatch(/geplant/i)
+  it('uses the approved coach product page while retaining the waitlist access boundary', () => {
+    expect(JSON.stringify(coachContent)).not.toMatch(/still in development|noch in Entwicklung/)
+    expect(coachCompactCopy.en.finalText).toContain('access opens')
+    expect(coachCompactCopy.de.finalText).toContain('Zugang')
+    expect(audienceContent.coach.en.finalNote).toContain('does not give you access')
+    expect(audienceContent.coach.de.finalNote).toContain('keinen Zugang')
   })
 
   it.each(['coach', 'partner'] as const)('preserves %s waitlist CTAs and access boundaries', (audience) => {
@@ -161,19 +161,14 @@ describe('approved audience copy contract', () => {
     expect(de.finalNote).toBe('Das ist eine Anfrage, keine bestätigte Buchung. Du wirst nicht für E Mail Updates angemeldet.')
   })
 
-  it('assigns interpretation to VANE and application decisions to the coach in both languages', () => {
-    const { en, de } = audienceContent.coach
-    expect(en.steps[1].description).toContain("VANE's interpretation")
-    expect(de.steps[1].description).toContain('VANEs Interpretation')
-    expect(en.steps[2].description).toContain('Decide what to change in training')
-    expect(de.steps[2].description).toContain('Entscheide')
-    expect(en.scienceText).toContain('VANE interprets your assessment results')
-    expect(en.scienceText).toContain('decides what to do next, and puts it into practice')
-    expect(de.scienceText).toContain('VANE interpretiert die Ergebnisse')
-    expect(de.scienceText).toContain('entscheidet über die nächsten Schritte und setzt sie im Training um')
-    expect(en.scienceText).toContain('does not provide a medical diagnosis')
-    expect(de.scienceText).toContain('keine medizinische Diagnose')
-    expect(JSON.stringify({ en, de })).not.toMatch(/interpretation stays with your team|Einordnung bleibt bei deinem Team|Einordnung durch dein Team/i)
+  it('assigns needs analysis to MQS and training decisions to the coach in both languages', () => {
+    const { en, de } = coachContent
+    expect(coachCompactCopy.en.steps[1].description).toContain('identifies the qualities')
+    expect(coachCompactCopy.en.steps[2].description).toContain('Choose the exercises')
+    expect(coachCompactCopy.de.steps[1].description).toContain('NormVault')
+    expect(coachCompactCopy.de.steps[2].description).toContain('Wähle die Übungen')
+    expect(en.ui.medicalNote).toContain('not a medical diagnosis')
+    expect(de.ui.medicalNote).toContain('keine medizinische Diagnose')
   })
 
   it('uses the approved natural German partner process', () => {

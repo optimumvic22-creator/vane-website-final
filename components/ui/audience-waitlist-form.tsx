@@ -14,7 +14,7 @@ export function AudienceWaitlistForm({
   cta,
   note,
 }: {
-  audience: 'coach' | 'partner'
+  audience: 'athlete' | 'coach' | 'partner'
   locale: Locale
   cta: string
   note: string

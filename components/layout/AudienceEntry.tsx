@@ -317,11 +317,10 @@ export function AudienceEntry() {
   return (
     <section
       ref={mediaContainerRef}
-      className="relative overflow-hidden bg-[#050607] [--entry-intro-min:320px] [--entry-intro-reduction:var(--entry-mobile-intro-reduction,0px)] [--entry-mobile-junction-min:240px] [--entry-athlete-offset:var(--entry-mobile-athlete-offset,clamp(128px,35vw,160px))] [--entry-athlete-nudge:0px] md:[--entry-intro-min:0px] md:[--entry-intro-reduction:0px] md:[--entry-mobile-junction-min:0px] md:[--entry-athlete-offset:clamp(86px,max(20svh,min(32svh,19vw)),290px)] md:[--entry-athlete-nudge:2mm]"
-      style={{ minHeight: "max(100svh, 680px)" }}
+      className="relative min-h-[680px] flex-1 overflow-hidden bg-black [--entry-intro-min:320px] [--entry-intro-reduction:var(--entry-mobile-intro-reduction,0px)] [--entry-mobile-junction-min:240px] [--entry-athlete-offset:var(--entry-mobile-athlete-offset,clamp(128px,35vw,160px))] [--entry-athlete-nudge:0px] md:[--entry-intro-min:0px] md:[--entry-intro-reduction:0px] md:[--entry-mobile-junction-min:0px] md:[--entry-athlete-offset:clamp(86px,max(20svh,min(32svh,19vw)),290px)] md:[--entry-athlete-nudge:2mm]"
     >
       <div
-        className="absolute inset-x-0 top-0 z-40 bg-[#050607]"
+        className="absolute inset-x-0 top-0 z-40 bg-black"
         style={{ height: ENTRY_BAND_HEIGHT }}
       >
         <header className="absolute inset-x-0 top-0 z-50 mx-auto flex w-full max-w-[1600px] items-center justify-between px-5 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] max-[359px]:px-3 md:px-8 md:pb-6 md:pt-[calc(1.5rem+env(safe-area-inset-top))]">
@@ -387,7 +386,7 @@ export function AudienceEntry() {
             duration: reduceMotion ? 0 : 0.45,
             delay: reduceMotion ? 0 : 0.12,
           }}
-          className="pointer-events-none absolute inset-x-0 bottom-[calc(clamp(18px,2.8svh,30px)-3mm)] z-40 px-5 text-center md:bottom-[clamp(18px,2.8svh,30px)]"
+          className="pointer-events-none absolute inset-x-0 bottom-8 z-40 px-5 text-center md:bottom-[clamp(18px,2.8svh,30px)]"
         >
           <h1 className="mx-auto mt-2 max-w-[1440px] font-display text-[clamp(2.5rem,11vw,3.125rem)] font-[650] uppercase leading-[1.02] tracking-[0.012em] text-white sm:text-[clamp(3.075rem,5.43vw,5.64rem)]">
             Human Movement now has{" "}
@@ -403,7 +402,7 @@ export function AudienceEntry() {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 z-30 h-3 bg-gradient-to-b from-[#050607] to-transparent"
+        className="pointer-events-none absolute inset-x-0 z-30 h-16 bg-gradient-to-b from-black to-transparent"
         style={{ top: ENTRY_BAND_HEIGHT }}
       />
 
@@ -416,7 +415,7 @@ export function AudienceEntry() {
           initial={false}
           animate={{ opacity: 1 }}
           transition={{ duration: reduceMotion ? 0 : 0.65, ease: "easeOut" }}
-          className="absolute left-1/2 isolate aspect-square -translate-x-1/2 -translate-y-1/2 bg-[#08090A]"
+          className="absolute left-1/2 isolate aspect-square -translate-x-1/2 -translate-y-1/2 bg-black"
           style={{
             // Narrow screens need enough visible wedge height below the intro
             // for the complete Athlete label, not an offset based on screen height.
@@ -488,10 +487,10 @@ export function AudienceEntry() {
                     />
                     {role.slug === "coach" ? (
                       <>
-                        <span className="pointer-events-none absolute inset-y-0 left-0 w-[36%] bg-gradient-to-r from-[#08090A] via-[#08090A]/60 to-transparent" />
-                        <span className="pointer-events-none absolute inset-y-0 right-0 w-[36%] bg-gradient-to-l from-[#08090A] via-[#08090A]/60 to-transparent" />
-                        <span className="pointer-events-none absolute inset-x-0 top-0 h-[30%] bg-gradient-to-b from-[#08090A] via-[#08090A]/55 to-transparent" />
-                        <span className="pointer-events-none absolute inset-x-0 bottom-0 h-[34%] bg-gradient-to-t from-[#08090A] via-[#08090A]/55 to-transparent" />
+                        <span className="pointer-events-none absolute inset-y-0 left-0 w-[36%] bg-gradient-to-r from-black via-black/60 to-transparent" />
+                        <span className="pointer-events-none absolute inset-y-0 right-0 w-[36%] bg-gradient-to-l from-black via-black/60 to-transparent" />
+                        <span className="pointer-events-none absolute inset-x-0 top-0 h-[30%] bg-gradient-to-b from-black via-black/55 to-transparent" />
+                        <span className="pointer-events-none absolute inset-x-0 bottom-0 h-[34%] bg-gradient-to-t from-black via-black/55 to-transparent" />
                       </>
                     ) : null}
                   </div>
@@ -599,7 +598,7 @@ export function AudienceEntry() {
 
             <g
               fill="none"
-              stroke="#050607"
+              stroke="#000000"
               strokeOpacity="0.92"
               strokeWidth="4.8"
             >
@@ -713,6 +712,7 @@ export function AudienceEntry() {
           </svg>
         </motion.div>
       </div>
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-20 bg-gradient-to-t from-black to-transparent" />
     </section>
   );
 }

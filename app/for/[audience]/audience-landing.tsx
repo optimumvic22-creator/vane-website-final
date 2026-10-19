@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Check } from 'lucide-react'
@@ -13,9 +14,10 @@ import { MqsDashboard } from '@/components/ui/mqs-dashboard'
 import { AudienceContactForm } from '@/components/ui/audience-contact-form'
 import { PartnerPartnershipSections } from '@/components/ui/partner-partnership-sections'
 import { trackEvent } from '@/lib/analytics'
-import { audienceContent, type AudienceSlug } from '@/lib/audience-content'
+import { audienceContent, type AudienceSlug, type AudienceCopy } from '@/lib/audience-content'
 import { useLocale } from '@/lib/locale'
 import { cn } from '@/lib/utils'
+import { AudienceEyebrow, ProcessStepCard } from '@/components/ui/audience-primitives'
 
 const scienceMedia: Partial<
   Record<
@@ -172,76 +174,52 @@ const audienceMotion: Record<
 
 const stripSoftHyphens = (value: string) => value.replace(/\u00AD/g, '')
 
-function AudienceEyebrow({
-  children,
-  className,
-}: {
-  children: string
-  className?: string
-}) {
-  return (
-    <p
-      className={cn(
-        'inline-flex items-center gap-2.5 font-sans text-[12.6px] font-semibold uppercase leading-[1.25] tracking-[0.08em] text-white/70 md:text-[13.65px]',
-        className,
-      )}
-    >
-      <span
-        aria-hidden="true"
-        className="h-1 w-1 shrink-0 bg-[var(--mqs-value-inv)]"
-      />
-      <span>{children}</span>
-    </p>
-  )
+type AudienceCustomization = {
+  copy: AudienceCopy
+  hero?: ReactNode
+  afterHero?: ReactNode
+  benefits?: ReactNode
+  process?: ReactNode
+  afterProcess?: ReactNode
+  heroFooter?: ReactNode
+  benefitDetails?: ReactNode[]
+  resultsVisual?: ReactNode
+  resultsDetail?: ReactNode
+  hideResultsDecision?: boolean
+  science?: ReactNode
+  scienceFooter?: ReactNode
+  afterFinal?: ReactNode
+  secondaryHref?: string
 }
 
-function ProcessStepCard({
-  step,
-  index,
-  className,
-  joined = false,
-}: {
-  step: { title: string; description: string }
-  index: number
-  className?: string
-  joined?: boolean
-}) {
-  return (
-    <article
-      className={cn(
-        'relative bg-[#0B0C0E] p-4 sm:p-5 md:p-6',
-        !joined && 'rounded-xl border border-white/10',
-        className,
-      )}
-    >
-      <span className="font-mono text-xs tracking-[0.12em] text-primary">
-        0{index + 1}
-      </span>
-      <h3 className="mt-4 font-display text-[1.75rem] font-bold uppercase leading-[1.1] tracking-[0.02em] text-foreground [-webkit-text-stroke:0.15px_currentColor] [paint-order:stroke_fill] md:mt-6 md:text-[2rem]">
-        {step.title}
-      </h3>
-      <p className="mt-2 text-[15px] leading-[1.55] text-muted-foreground md:mt-3">
-        {step.description}
-      </p>
-    </article>
-  )
-}
-
-export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
+export function AudienceLanding({ audience, customization }: { audience: AudienceSlug; customization?: AudienceCustomization }) {
   const { locale } = useLocale()
-  const copy = audienceContent[audience][locale]
+  const copy = customization?.copy ?? audienceContent[audience][locale]
   const scienceImage = scienceMedia[audience]
   const motionSet = audienceMotion[audience]
-  const secondaryHref = audience === 'athlete' ? '#results' : '#how-it-works'
+  const secondaryHref = customization?.secondaryHref ?? (audience === 'athlete' ? '#results' : '#how-it-works')
   const headingTracking = audience === 'partner' ? 'tracking-[0.035em]' : undefined
 
   const trackCta = (location: string) => {
     trackEvent('audience_cta_click', { audience, location })
   }
 
+  const resultsList = (
+              <ul className="divide-y divide-white/12 border-y border-white/12">
+                {copy.deliverables.map((item) => (
+                  <li key={item} className="flex items-start gap-4 py-3.5 text-[15px] leading-[1.58] text-white/92 md:py-4 md:text-base">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-primary/60 text-[var(--mqs-value-inv)]">
+                      <Check className="h-3 w-3" aria-hidden="true" />
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+  )
+
   return (
     <>
-      <section id="for-whom" className="audience-hero relative scroll-mt-[88px] overflow-hidden border-b border-white/10 bg-background py-[4.5rem] md:scroll-mt-[104px] md:py-28 lg:py-24">
+      {customization?.hero ?? <section id="for-whom" className="audience-hero relative scroll-mt-[88px] overflow-hidden border-b border-white/10 bg-background py-[4.5rem] md:scroll-mt-[104px] md:py-28 lg:py-24">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
@@ -328,12 +306,15 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
               ))}
             </ul>
           </div>
+          {customization?.heroFooter}
         </Container>
-      </section>
+      </section>}
+
+      {customization?.afterHero}
 
       {audience === 'partner' && <PartnerPartnershipSections locale={locale} />}
 
-      <section
+      {customization?.benefits ?? <section
         id="benefits"
         className={cn(
           'scroll-mt-[88px] bg-[#08090A] py-[4.5rem] md:scroll-mt-[104px] md:py-24',
@@ -484,15 +465,16 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
                     >
                       {benefit.description}
                     </p>
+                    {customization?.benefitDetails?.[index]}
                   </div>
                 </article>
               ))}
             </div>
           </div>
         </Container>
-      </section>
+      </section>}
 
-      <section id="how-it-works" className="scroll-mt-[88px] bg-background py-[4.5rem] md:scroll-mt-[104px] md:py-24">
+      {customization?.process ?? <section id="how-it-works" className="scroll-mt-[88px] bg-background py-[4.5rem] md:scroll-mt-[104px] md:py-24">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             <AudienceEyebrow>{copy.processEyebrow}</AudienceEyebrow>
@@ -512,7 +494,9 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
             ))}
           </div>
         </Container>
-      </section>
+      </section>}
+
+      {customization?.afterProcess}
 
       <section id="results" className="relative isolate scroll-mt-[88px] overflow-hidden bg-[#08090A] py-[4.5rem] md:scroll-mt-[104px] md:py-28">
         {audience === 'athlete' || audience === 'coach' || audience === 'partner' ? (
@@ -538,29 +522,21 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
         <Container className="relative z-10">
           <div className="grid items-start gap-y-12 lg:grid-cols-2 lg:gap-x-24 lg:gap-y-12">
             <div>
-              <AudienceEyebrow className="text-white/88">
+              {copy.outputEyebrow && <AudienceEyebrow className="text-white/88">
                 {copy.outputEyebrow}
-              </AudienceEyebrow>
-              <h2 className={cn('mt-3.5 font-display text-5xl font-bold uppercase leading-[0.96] tracking-[0.02em] text-white [-webkit-text-stroke:0.2px_currentColor] [paint-order:stroke_fill] drop-shadow-[0_2px_12px_rgba(0,0,0,0.42)] md:mt-4 md:text-[4rem]', headingTracking)}>
+              </AudienceEyebrow>}
+              <h2 className={cn('mt-3.5 font-display text-5xl font-bold uppercase leading-[0.96] tracking-[0.02em] text-white [-webkit-text-stroke:0.2px_currentColor] [paint-order:stroke_fill] drop-shadow-[0_2px_12px_rgba(0,0,0,0.42)] md:mt-4 md:text-[4rem]', !copy.outputEyebrow && 'mt-0 md:mt-0', headingTracking)}>
                 {copy.outputTitle}
               </h2>
               <p className="mt-6 max-w-[60ch] text-base leading-[1.58] text-white/82 md:text-[17px]">
                 {copy.outputIntro}
               </p>
+              {customization?.resultsVisual && <div className="mt-8">{resultsList}{customization.resultsDetail}</div>}
             </div>
             <div>
-              <ul className="divide-y divide-white/12 border-y border-white/12">
-                {copy.deliverables.map((item) => (
-                  <li key={item} className="flex items-start gap-4 py-3.5 text-[15px] leading-[1.58] text-white/92 md:py-4 md:text-base">
-                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-primary/60 text-[var(--mqs-value-inv)]">
-                      <Check className="h-3 w-3" aria-hidden="true" />
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              {customization?.resultsVisual ?? resultsList}
             </div>
-            <div className="w-full lg:col-span-2 lg:mx-auto lg:max-w-[720px]">
+            {!customization?.hideResultsDecision && <div className="w-full lg:col-span-2 lg:mx-auto lg:max-w-[720px]">
               <div className="rounded-xl border border-primary/28 bg-[rgba(13,17,20,0.9)] p-6 shadow-[0_20px_70px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.055)] backdrop-blur-xl md:p-8 lg:px-12 lg:py-9 lg:text-center">
                 <p className="font-sans text-xs font-semibold uppercase tracking-[0.1em] text-[var(--mqs-value-inv)]">
                   {copy.decisionLabel}
@@ -569,12 +545,12 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
                   {copy.decisionText}
                 </p>
               </div>
-            </div>
+            </div>}
           </div>
         </Container>
       </section>
 
-      <section id="science" className="scroll-mt-[88px] bg-background py-[4.5rem] md:scroll-mt-[104px] md:py-24">
+      {customization?.science ?? <section id="science" className="scroll-mt-[88px] bg-background py-[4.5rem] md:scroll-mt-[104px] md:py-24">
         <Container>
           <div className="grid gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-24">
             <div>
@@ -620,8 +596,9 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
               </div>
             </div>
           </div>
+          {customization?.scienceFooter}
         </Container>
-      </section>
+      </section>}
 
       <section id="waitlist" className="relative scroll-mt-[88px] overflow-hidden bg-[#08090A] py-[4.5rem] md:scroll-mt-[104px] md:py-28">
         <div
@@ -651,6 +628,7 @@ export function AudienceLanding({ audience }: { audience: AudienceSlug }) {
           </Link>
         </Container>
       </section>
+      {customization?.afterFinal}
     </>
   )
 }

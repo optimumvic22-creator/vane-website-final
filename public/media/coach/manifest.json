@@ -1,0 +1,86 @@
+[
+  {
+    "file": "tour-01-score.webp",
+    "source": "Screenshot 2026-10-13 at 18.48.00.png",
+    "createdAt": "2026-10-13T16:48:01.308Z",
+    "width": 2400,
+    "height": 1562,
+    "bytes": 104466,
+    "crop": {
+      "top": 104
+    },
+    "content": "Fictional demo data; confirmed by Dario in this chat. Preliminary prototype."
+  },
+  {
+    "file": "tour-02-trial-scrubber.webp",
+    "source": "Screenshot 2026-10-13 at 18.48.23.png",
+    "createdAt": "2026-10-13T16:48:25.428Z",
+    "width": 2400,
+    "height": 1562,
+    "bytes": 77762,
+    "crop": {
+      "top": 104
+    },
+    "content": "Fictional demo data; confirmed by Dario in this chat. Preliminary prototype."
+  },
+  {
+    "file": "tour-03-metrics.webp",
+    "source": "Screenshot 2026-10-13 at 18.50.09.png",
+    "createdAt": "2026-10-13T16:50:10.443Z",
+    "width": 2400,
+    "height": 1573,
+    "bytes": 101364,
+    "crop": {
+      "top": 104
+    },
+    "content": "Fictional demo data; confirmed by Dario in this chat. Preliminary prototype."
+  },
+  {
+    "file": "tour-04-reference.webp",
+    "source": "Screenshot 2026-10-13 at 18.52.22.png",
+    "createdAt": "2026-10-13T16:52:22.840Z",
+    "width": 2400,
+    "height": 1562,
+    "bytes": 144604,
+    "crop": {
+      "top": 104
+    },
+    "content": "Fictional demo data; confirmed by Dario in this chat. Preliminary prototype."
+  },
+  {
+    "file": "tour-05-trends.webp",
+    "source": "Screenshot 2026-10-13 at 18.52.59.png",
+    "createdAt": "2026-10-13T16:52:59.661Z",
+    "width": 2400,
+    "height": 1562,
+    "bytes": 132652,
+    "crop": {
+      "top": 104
+    },
+    "content": "Fictional demo data; confirmed by Dario in this chat. Preliminary prototype."
+  },
+  {
+    "file": "tour-06-quadrants.webp",
+    "source": "Screenshot 2026-10-13 at 18.53.24.png",
+    "createdAt": "2026-10-13T16:53:25.315Z",
+    "width": 2400,
+    "height": 1562,
+    "bytes": 143310,
+    "crop": {
+      "top": 104
+    },
+    "content": "Fictional demo data; confirmed by Dario in this chat. Preliminary prototype."
+  },
+  {
+    "file": "tour-07-capture.webp",
+    "source": "Screenshot 2026-10-13 at 18.54.14.png",
+    "createdAt": "2026-10-13T16:54:15.822Z",
+    "width": 2400,
+    "height": 1562,
+    "bytes": 136482,
+    "crop": {
+      "top": 104
+    },
+    "content": "Fictional demo data; confirmed by Dario in this chat. Preliminary prototype."
+  }
+]

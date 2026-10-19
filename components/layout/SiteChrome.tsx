@@ -8,8 +8,9 @@ import { LocaleProvider, useLocale, type Locale } from '@/lib/locale'
 import { setMotionPaused, useMotionPaused } from '@/lib/motion-preference'
 import { CookieBanner } from './CookieBanner'
 import { LanguageGate } from './LanguageGate'
+import { EntryFooter } from './EntryFooter'
 
-// Entry and Studio do not need the public-page header/footer. Retain SSR while
+// Entry has its own compact footer; Studio needs no public chrome. Retain SSR while
 // loading these modules only on routes that render them. The first-visit language
 // dialog stays eager so an inert page never has to wait for its controls to load.
 const SiteHeader = dynamic(() => import('./SiteHeader').then((module) => module.SiteHeader))
@@ -44,10 +45,11 @@ function SiteChromeInner({
 
   if (isAudienceEntry) {
     return (
-      <>
-        <main id="main-content">{children}</main>
+      <div className="flex min-h-svh flex-col bg-black">
+        <main id="main-content" className="flex flex-1 flex-col">{children}</main>
+        <EntryFooter />
         <CookieBanner />
-      </>
+      </div>
     )
   }
 

@@ -13,10 +13,12 @@ function stubBrowser(consent: string | null = null) {
   }
   const browser: Record<string, unknown> = {
     gtag: vi.fn(),
-    location: { hostname: 'www.vanescience.com' },
+    location: { hostname: 'www.vanescience.com', pathname: '/', href: 'https://www.vanescience.com/' },
   }
   const document = {
     cookie: '',
+    referrer: 'https://example.com/article?email=private%40example.com',
+    title: 'VANE Science',
     createElement: vi.fn(() => ({})),
     head: { appendChild: vi.fn() },
   }
@@ -47,6 +49,55 @@ afterEach(() => {
 })
 
 describe('analytics consent guard', () => {
+  it('queues real Google commands, disables advertising, and measures the accepted page once', async () => {
+    const { browser, document } = stubBrowser()
+    const { setConsent, loadAnalytics, trackPageView } = await import('./analytics')
+    setConsent('all')
+    loadAnalytics()
+    trackPageView()
+    const queue = browser.dataLayer as IArguments[]
+    expect(queue.every((entry) => Object.prototype.toString.call(entry) === '[object Arguments]')).toBe(true)
+    const commands = queue.map((entry) => Array.from(entry))
+    expect(commands[0]).toEqual(['consent', 'default', {
+      analytics_storage: 'granted', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied',
+    }])
+    expect(commands.find((entry) => entry[0] === 'config')).toEqual(['config', GA_ID, expect.objectContaining({
+      send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false,
+      cookie_expires: 15552000, cookie_update: false,
+    })])
+    expect(commands.filter((entry) => entry[1] === 'page_view')).toEqual([['event', 'page_view', {
+      page_location: 'https://www.vanescience.com/', page_referrer: 'https://example.com/article', page_title: 'VANE Science',
+    }]])
+    expect(document.head.appendChild).toHaveBeenCalledTimes(1)
+  })
+
+  it('tracks navigation once, blocks withdrawn visits, and resumes only on explicit consent', async () => {
+    const { browser } = stubBrowser('all')
+    const { loadAnalytics, trackPageView, setConsent } = await import('./analytics')
+    loadAnalytics()
+    browser.location = { hostname: 'www.vanescience.com', pathname: '/for/coach', href: 'https://www.vanescience.com/for/coach?email=private%40example.com#contact' }
+    trackPageView()
+    trackPageView()
+    const views = () => (browser.dataLayer as IArguments[]).map((entry) => Array.from(entry)).filter((entry) => entry[1] === 'page_view')
+    expect(views()).toHaveLength(2)
+    expect(views()[1][2]).toMatchObject({ page_location: 'https://www.vanescience.com/for/coach', page_referrer: 'https://www.vanescience.com/' })
+    setConsent('essential')
+    trackPageView()
+    expect(views()).toHaveLength(2)
+    setConsent('all')
+    expect(views()).toHaveLength(3)
+  })
+
+  it('retains safe campaign attribution and drops arbitrary queries, email values and fragments', async () => {
+    const { analyticsUrl } = await import('./analytics')
+    expect(analyticsUrl('https://vanescience.com/?utm_source=instagram&utm_medium=social&utm_campaign=launch_2026&lang=de&email=a%40b.com&token=secret#secret', true))
+      .toBe('https://vanescience.com/?utm_source=instagram&utm_medium=social&utm_campaign=launch_2026&lang=de')
+    expect(analyticsUrl('https://vanescience.com/?utm_campaign=a%40b.com', true)).toBe('https://vanescience.com/')
+    expect(analyticsUrl('https://example.com/?utm_source=google#private')).toBe('https://example.com/')
+    expect(analyticsUrl('mailto:private@example.com')).toBe('')
+    expect(analyticsUrl('invalid')).toBe('')
+  })
+
   it('is safe during SSR without retaining a server-side consent choice', async () => {
     const { getConsent, setConsent, trackEvent } = await import('./analytics')
     expect(() => setConsent('all')).not.toThrow()
@@ -136,7 +187,7 @@ describe('analytics consent guard', () => {
     expect(getConsent()).toBe('all')
     expect(browser[`ga-disable-${GA_ID}`]).toBe(false)
     expect(document.head.appendChild).toHaveBeenCalledTimes(1)
-    expect(browser.dataLayer).toContainEqual(['event', 'waitlist_submit', undefined])
+    expect((browser.dataLayer as IArguments[]).map((command) => Array.from(command))).toContainEqual(['event', 'waitlist_submit', undefined])
 
     expect(() => setConsent('essential')).not.toThrow()
     const previousEvents = [...browser.dataLayer as unknown[]]

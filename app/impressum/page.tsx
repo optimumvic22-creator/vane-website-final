@@ -29,7 +29,8 @@ export default function ImpressumPage() {
               Sitz: Wien<br />
               Linke Wienzeile 64/GL II<br />
               1060 Wien<br />
-              Österreich
+              Österreich<br />
+              Umsatzsteuer-Identifikationsnummer (UID): ATU83715703
             </Body>
           </div>
 
